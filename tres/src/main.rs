@@ -2,6 +2,7 @@ use std::env::args;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
+use std::str::FromStr;
 
 /// This exercise reads a file with different instruction lines in the format
 /// "op arg_one arg_two"
@@ -60,6 +61,50 @@ fn parse_instruction(line: &str) -> Option<Instruction> {
     }
 }
 
+fn run_add(arguments: Vec<String>) -> String {
+    let mut result: usize = 0;
+    for a in arguments {
+        let operands: Vec<&str> = a.split("x").collect();
+        result += operands.iter().fold(1, |acc, x| {
+            acc * usize::from_str(&x).ok().unwrap_or_default()
+        });
+    }
+    String::from(result.to_string())
+}
+
+fn run_mix(arguments: Vec<String>) -> String {
+    let max_length: usize = arguments.iter().fold(0, |acc, arg| {
+        if arg.len() > acc {
+            return arg.len();
+        }
+        acc
+    });
+
+    let mut result: Vec<char> = vec![];
+
+    for i in 0..max_length {
+        for j in 0..arguments.len() {
+            if i < arguments[j].len() {
+                let c = arguments[j].chars().nth(i).unwrap();
+                result.push(c);
+            }
+        }
+    }
+
+    String::from(result.iter().collect::<String>())
+}
+
+fn run_instruction(content: &str) -> String {
+    if let Some(instruction) = parse_instruction(&content) {
+        return match instruction.operation {
+            Operation::Add => run_add(instruction.arguments),
+            Operation::Mix => run_mix(instruction.arguments),
+        };
+    }
+
+    String::from("")
+}
+
 fn main() -> std::io::Result<()> {
     if args().len() != 2 {
         eprintln!("Invalid arguments. Use `cargo run /path/to/file/name.txt`");
@@ -77,8 +122,7 @@ fn main() -> std::io::Result<()> {
     for l in buf_reader.lines() {
         match l {
             Ok(content) => {
-                println!("{}", content);
-                parse_instruction(&content);
+                run_instruction(&content);
             }
             _ => eprintln!("Error reading line {:?}", l),
         }
@@ -89,33 +133,26 @@ fn main() -> std::io::Result<()> {
 
 #[test]
 fn test_parse_instruction_add() {
-    let instruction = parse_instruction("add 10x1 2x5");
-    assert_ne!(instruction, None);
-    let i = instruction.unwrap();
-    assert_eq!(i.operation, Operation::Add);
-    assert_eq!(i.arguments, vec!["10x1", "2x5"]);
+    let result = run_instruction("add 10x1 2x5");
+    assert_ne!(result, "");
+    assert_eq!(result, "20");
 }
 
 #[test]
 fn test_parse_instruction_mix() {
-    let instruction = parse_instruction("mix abc def");
-    assert_ne!(instruction, None);
-    let i = instruction.unwrap();
-    assert_eq!(i.operation, Operation::Mix);
-    assert_eq!(i.arguments, vec!["abc", "def"]);
+    let result = run_instruction("mix abc def");
+    assert_ne!(result, "");
+    assert_eq!(result, "adbecf");
 }
 
 #[test]
 fn test_parse_instruction_no_args() {
-    let instruction = parse_instruction("");
-    assert_eq!(instruction, None);
-
-    let instruction = parse_instruction("single");
-    assert_eq!(instruction, None);
+    let result = run_instruction("single");
+    assert_eq!(result, "");
 }
 
 #[test]
 fn test_parse_instruction_invalid_op() {
-    let instruction = parse_instruction("something a");
-    assert_eq!(instruction, None);
+    let result = run_instruction("something a");
+    assert_eq!(result, "");
 }
