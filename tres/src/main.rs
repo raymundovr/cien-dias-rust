@@ -69,7 +69,7 @@ fn run_add(arguments: Vec<String>) -> String {
             acc * usize::from_str(&x).ok().unwrap_or_default()
         });
     }
-    String::from(result.to_string())
+    result.to_string()
 }
 
 fn run_mix(arguments: Vec<String>) -> String {
@@ -91,7 +91,7 @@ fn run_mix(arguments: Vec<String>) -> String {
         }
     }
 
-    String::from(result.iter().collect::<String>())
+    result.iter().collect::<String>()
 }
 
 fn run_instruction(content: &str) -> String {
