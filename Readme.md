@@ -83,3 +83,12 @@ enum Operation {
                 return None;
             }
 ```
+Para obtener una conversión on un valor por default para un `&str`
+```rust
+usize::from_str(&x).ok().unwrap_or_default()
+```
+
+Para acceder a un `char` en una posición `i` de un `String`
+```rust
+let c = my_string.chars().nth(i).unwrap();
+```
