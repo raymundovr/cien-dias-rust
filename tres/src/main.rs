@@ -84,8 +84,7 @@ fn run_mix(arguments: Vec<String>) -> String {
 
     for i in 0..max_length {
         for j in 0..arguments.len() {
-            if i < arguments[j].len() {
-                println!("C {:?}{}", arguments[j], i);
+            if i < arguments[j].chars().count() {
                 let c = arguments[j].chars().nth(i).unwrap();
                 result.push(c);
             }

@@ -1,4 +1,4 @@
 add 10x1 11 2x15
 mix amelia raymundo
 add 32 4x5 67 3x4
-mix ixtepec oaxaca
+mix ixtepec oaxaca méxico
