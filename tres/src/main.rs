@@ -11,8 +11,8 @@ use std::str::FromStr;
 /// mix abc def
 /// Then writes for each line its output of the operation in a different file
 /// Examples:
-/// add_res 110
-/// mix_res adbecf
+/// 110
+/// adbecf
 /// When the line has an incorrect format then it omits it
 
 #[derive(Debug, PartialEq)]
@@ -85,6 +85,7 @@ fn run_mix(arguments: Vec<String>) -> String {
     for i in 0..max_length {
         for j in 0..arguments.len() {
             if i < arguments[j].len() {
+                println!("C {:?}{}", arguments[j], i);
                 let c = arguments[j].chars().nth(i).unwrap();
                 result.push(c);
             }
@@ -118,14 +119,17 @@ fn main() -> std::io::Result<()> {
     println!("File loaded...");
 
     let buf_reader = BufReader::new(file);
+    let mut output = File::create("./output.txt")?;
 
     for l in buf_reader.lines() {
-        match l {
+        println!("Processing {:?}", l);
+        let result = match l {
             Ok(content) => {
-                run_instruction(&content);
+                run_instruction(&content)
             }
-            _ => eprintln!("Error reading line {:?}", l),
-        }
+            _ => String::from("error"),
+        };
+        writeln!(output, "{}", result);
     }
 
     Ok(())
