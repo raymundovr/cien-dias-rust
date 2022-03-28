@@ -92,3 +92,26 @@ Para acceder a un `char` en una posición `i` de un `String`
 ```rust
 let c = my_string.chars().nth(i).unwrap();
 ```
+
+Escribir a archivos también tiene su macro:
+```rust
+let mut file = File::create("output.txt")?;
+
+// escribe una línea
+writeln!(file, "{}", content);
+
+// escribe sin salto de línea
+write!(file, "{}", content);
+```
+La macro es muy conveniente para `String`.
+
+
+Un `char` en unicode ocupa 2 bytes. Hay que tener cuidado con su manipulación para no desbordar. Ejemplo
+```rust
+let mx = "méxico";
+mx.len() == 7;
+mx.chars().count() == 6;
+
+// esto desborda
+mx.chars().nth(6);
+```
