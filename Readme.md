@@ -115,3 +115,19 @@ mx.chars().count() == 6;
 // esto desborda
 mx.chars().nth(6);
 ```
+
+## Cuatro
+
+Para manipular imágenes se puede usar el crate [image](https://docs.rs/image/0.23.3/image/).
+
+Ejemplos
+```rust
+
+use image::{ GenericImageView, ImageError };
+
+fn main() -> Result<(), ImageError> {
+  let image = image::open(path)?;
+  Ok(())
+}
+
+```
