@@ -131,3 +131,28 @@ fn main() -> Result<(), ImageError> {
 }
 
 ```
+
+Separar módulos se logra creando archivos .rs que van a contener los módulos.
+
+Ejemplo
+```rust
+// src/generate.rs
+
+pub mod images {
+  pub fn single_pixel() {
+    ...
+  }
+}
+```
+
+Después se importan en el archivo que los va a utilizar como
+```rust
+mod generate;
+
+pub use crate::generate::images;
+
+fn main() {
+...
+  images::single_pixel();
+}
+```

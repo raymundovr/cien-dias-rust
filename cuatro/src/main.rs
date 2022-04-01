@@ -1,7 +1,8 @@
+mod generate;
 use std::env;
 use std::process::exit;
 use image::{ GenericImageView, ImageError};
-
+pub use crate::generate::images;
 
 fn main() -> Result<(), ImageError> {
 
@@ -17,6 +18,6 @@ fn main() -> Result<(), ImageError> {
 
     println!("Dimensions: {:?}", image.dimensions());
     println!("Color: {:?}", image.color());
-
+    images::single_pixel();
     Ok(())
 }
