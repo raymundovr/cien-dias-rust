@@ -14,10 +14,11 @@ fn main() -> Result<(), ImageError> {
     let image_path = env::args().nth(1).unwrap();
     println!("Opening {}", image_path);
 
-    let image = image::open(image_path)?;
+    let image = image::open(&image_path)?;
 
     println!("Dimensions: {:?}", image.dimensions());
     println!("Color: {:?}", image.color());
-    images::single_pixel();
+    // images::single_pixel();
+    images::apply_filter(&image_path)?;
     Ok(())
 }

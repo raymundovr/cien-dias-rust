@@ -156,3 +156,38 @@ fn main() {
   images::single_pixel();
 }
 ```
+
+Para operar con un `path` se puede usar `std::path::Path`. Ejemplo
+```rust
+use std::path::Path;
+
+fn main() {
+  let path = Path::new("/home/r/file.png");
+  // la extensión -> Option(&OsStr)
+  path.extension();
+  // El nombre (sin extensión) -> Option(&OsStr)
+  path.file_stem();
+}
+```
+
+`U8` tiene opciones para ciclar el valor y evitar desbordar
+```rust
+let n: u8 = 250;
+
+// -> 25
+n.wrapping_add(30);
+
+// -> 250
+n.wrapping_sub(265)
+```
+
+También para añadir y restar topando en `u8::MAX` / `u8::MIN`
+```rust
+let n: u8 = 250;
+
+// 255
+n.saturating_add(100);
+
+// 0
+n.saturating_sub(300);
+```
