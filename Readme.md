@@ -122,7 +122,7 @@ Para manipular imágenes se puede usar el crate [image](https://docs.rs/image/0.
 
 Ejemplos
 ```rust
-
+// GenericImageView es un trait que debe ser cargado para poder inspeccionar una imagen.
 use image::{ GenericImageView, ImageError };
 
 fn main() -> Result<(), ImageError> {
@@ -190,4 +190,10 @@ n.saturating_add(100);
 
 // 0
 n.saturating_sub(300);
+```
+
+Destructurar un array se logra
+```rust
+// este ejemplo es breve para enfocar, ver el código de images::apply_filter() para la referencia correcta
+let [red, green, yellow, alpha] = *pixel;
 ```
