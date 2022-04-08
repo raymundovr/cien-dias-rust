@@ -36,4 +36,11 @@ pub mod images {
 
         Ok(())
     }
+
+    pub fn vigneta(image_path: &str) -> Result<(), ImageError> {
+        let original_img = image::open(image_path);
+        
+        
+        Ok(())
+    }
 }

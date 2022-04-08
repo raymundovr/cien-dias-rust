@@ -197,3 +197,27 @@ Destructurar un array se logra
 // este ejemplo es breve para enfocar, ver el código de images::apply_filter() para la referencia correcta
 let [red, green, yellow, alpha] = *pixel;
 ```
+
+## Cinco
+
+[Tide](https://docs.rs/tide/latest/tide/) es un web framework para Rust. Basado [async-std](https://async.rs/).
+
+Para transmitir JSON se usa [serde](https://crates.io/crates/serde) y [serde-json](https://crates.io/crates/serde_json).
+
+Declaración principal
+
+```rust
+#[async_std::main]
+async fn main() -> tide::Result<()> {
+    let mut app = tide::new();
+
+    app.at("/albums").get(get_albums);
+    app.listen("127.0.0.1:8080").await?;
+
+    Ok(())
+}
+
+async fn get_albums(_req: Request<()>) -> Result<serde_json::Value, tide::Error> {
+  ...
+}
+```
