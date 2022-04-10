@@ -1,6 +1,6 @@
+use actix_web::{get, web, App, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
-use tide::prelude::*;
-use tide::{Request};
+use serde_json::json;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Album {
@@ -10,17 +10,19 @@ struct Album {
     price: f64,
 }
 
-#[async_std::main]
-async fn main() -> tide::Result<()> {
-    let mut app = tide::new();
-
-    app.at("/albums").get(get_albums);
-    app.listen("127.0.0.1:8080").await?;
-
-    Ok(())
+#[actix_web::main]
+async fn main() -> std::io::Result<()>{
+    HttpServer::new(|| {
+        App::new()
+        .service(get_albums)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }
 
-async fn get_albums(_req: Request<()>) -> Result<serde_json::Value, tide::Error> {
+#[get("/albums")]
+async fn get_albums() -> impl Responder {
     let albums: Vec<Album> = vec![
         Album {
             id: "1".into(),
@@ -47,11 +49,6 @@ async fn get_albums(_req: Request<()>) -> Result<serde_json::Value, tide::Error>
             price: 29.99,
         },
     ];
-    Ok(json!({
-        "albums": albums,
-        "meta": {
-            "count": 4,
-            "version": 1,
-        }
-    }))
+
+    web::Json(json!(albums))
 }

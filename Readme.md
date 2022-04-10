@@ -221,3 +221,30 @@ async fn get_albums(_req: Request<()>) -> Result<serde_json::Value, tide::Error>
   ...
 }
 ```
+---
+Tide no es a mi parecer la mejor opción: https://twitter.com/raybachas/status/1513222482421071884
+
+---
+
+[Actix-Web](https://actix.rs/) es un web framework que usa Tokio y tiene más actividad y uso en producción.
+
+Declaración principal
+```rust
+use actix_web::{get, web, App, HttpServer, Responder};
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()>{
+    HttpServer::new(|| {
+        App::new()
+        .service(get_albums)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+
+#[get("/albums")]
+async fn get_albums() -> impl Responder {
+  ...
+}
+```
