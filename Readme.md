@@ -248,3 +248,43 @@ async fn get_albums() -> impl Responder {
   ...
 }
 ```
+
+Para retornar un código hay que importar `HttpResponse` y `HttpResponseBuilder`. La función debe retornar `HttpResponseBuilder`.
+```rust
+#[post("/albums")]
+async fn post_album(data: web::Data<AppState>, body: String) -> HttpResponseBuilder {
+  HttpResponse::Ok()
+}
+```
+
+Para manejar estado interno hay que envolverlo en estructuras con `Mutex` ya que actix-web lanza un nuevo hilo con cada petición que llega.
+
+Esta estructura debe ser envuelta una vez más con `web::Data` y pasarla a la aplicación con `app_data()`.
+
+Cada función la recibe con la mimsma estructura genérica `web::Data<T>`.
+
+```rust
+#[derive(Debug)]
+struct AppState {
+    albums: Mutex<Vec<Album>>,
+}
+
+fn main() {
+  let app_state = web::Data::new(AppState {...});
+  ...
+    App::new()
+            .app_data(app_state.clone())
+  ...
+}
+
+async fn get_albums(data: web::Data<AppState>) -> impl Responder {
+    let albums = &data.albums;
+    ...
+}
+
+#[post("/albums")]
+async fn post_album(data: web::Data<AppState>, body: String) -> HttpResponseBuilder {
+    let mut albums = data.albums.lock().unwrap();
+    ...
+}
+```
