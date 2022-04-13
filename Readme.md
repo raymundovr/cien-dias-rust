@@ -288,3 +288,21 @@ async fn post_album(data: web::Data<AppState>, body: String) -> HttpResponseBuil
     ...
 }
 ```
+
+Es posible mantener enviar un JSON junto con un status code si se invoca la respuesta como `web::Json(json!("not found")).customize().with_status(StatusCode::NOT_FOUND)`
+
+```rust
+#[get("/albums/{id}")]
+async fn get_album(data: web::Data<AppState>, path: web::Path<String>) -> impl Responder {
+    let albums = data.albums.lock().unwrap();
+    let id = path.into_inner();
+    println!("Received {}", id);
+    for album in albums.iter() {
+        if album.id == id {
+            return web::Json(json!(album)).customize().with_status(StatusCode::OK);
+        }
+    }
+
+    web::Json(json!("not found")).customize().with_status(StatusCode::NOT_FOUND)
+}
+```

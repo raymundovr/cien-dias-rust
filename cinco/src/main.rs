@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, HttpResponseBuilder};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, HttpResponseBuilder, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Mutex;
@@ -51,6 +51,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(app_state.clone())
             .service(get_albums)
             .service(post_album)
+            .service(get_album)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
@@ -73,4 +74,18 @@ async fn post_album(data: web::Data<AppState>, body: String) -> HttpResponseBuil
     }
 
     HttpResponse::BadRequest()
+}
+
+#[get("/albums/{id}")]
+async fn get_album(data: web::Data<AppState>, path: web::Path<String>) -> impl Responder {
+    let albums = data.albums.lock().unwrap();
+    let id = path.into_inner();
+    println!("Received {}", id);
+    for album in albums.iter() {
+        if album.id == id {
+            return web::Json(json!(album)).customize().with_status(StatusCode::OK);
+        }
+    }
+
+    web::Json(json!("not found")).customize().with_status(StatusCode::NOT_FOUND)
 }
