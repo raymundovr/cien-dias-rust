@@ -306,3 +306,7 @@ async fn get_album(data: web::Data<AppState>, path: web::Path<String>) -> impl R
     web::Json(json!("not found")).customize().with_status(StatusCode::NOT_FOUND)
 }
 ```
+
+## Seis
+
+Siguiendo https://www.mongodb.com/developer/quickstart/rust-crud-tutorial/
