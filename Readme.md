@@ -310,3 +310,29 @@ async fn get_album(data: web::Data<AppState>, path: web::Path<String>) -> impl R
 ## Seis
 
 Siguiendo https://www.mongodb.com/developer/quickstart/rust-crud-tutorial/
+
+Para requerir variables de entorno
+```rust
+use std::env;
+
+env::var("MONGODB_URI").expect("You must set the MONGODB_URI env var!");
+```
+
+Para realizar las operaciones con Mongo se usa la macro `bson::doc!`.
+
+Para hacer la transformación de una `struct` se usa `serde`.
+```rust
+#[derive(Debug, Deserialize, Serialize)]
+struct Movie {
+    #[serde(rename = "_id,", skip_serializing_if = "Option::is_none")]
+    id: Option<ObjectId>,
+    title: String,
+    year: u8,
+    plot: String,
+    #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
+    released: DateTime<Utc>,
+}
+```
+
+El campo `id` es convertido a `_id` pero si es `None` no es convertido y se omite del documento.
+
