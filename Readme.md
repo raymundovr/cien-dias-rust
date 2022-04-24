@@ -336,3 +336,15 @@ struct Movie {
 
 El campo `id` es convertido a `_id` pero si es `None` no es convertido y se omite del documento.
 
+## Siete
+
+Es mejor usar una `struct` y no un `type`. Una `struct` puede proveer funciones propias y sobrecargas.
+
+Sobrecargar `std::fmt::Display`
+```rust
+  impl fmt::Display for Celsius {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(f, "{} °C", self.0)
+        }
+    }
+```
