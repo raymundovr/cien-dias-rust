@@ -1,10 +1,14 @@
-mod convertor;
-use convertor::temperature::{Celsius, Farenheit};
+use siete::server::{get_celsius, get_farenheit};
+use actix_web::{App, HttpServer};
 
-fn main() {
-    let c: Celsius = Farenheit::new(32.0).into_celsius();
-    let f: Farenheit = Celsius::new(0.0).into_farenheit();
-
-    println!("Some degrees Celsius {}", c);
-    println!("Some degrees Farenheit {}", f);
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(move || {
+        App::new()
+            .service(get_celsius)
+            .service(get_farenheit)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }

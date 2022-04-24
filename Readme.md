@@ -348,3 +348,17 @@ Sobrecargar `std::fmt::Display`
         }
     }
 ```
+
+`main.rs` y `lib.rs` representan límites distintos dentro del `package`. Sólo puede existir un `mod ...` en todos los límites.
+
+```rust
+// lib.rs
+pub mod convertor;
+pub mod server;
+
+// main.rs
+
+use siete::server::{get_celsius, get_farenheit};
+```
+
+Lo mejor sería optar por tener módulos internos con sus dependencias claras https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
