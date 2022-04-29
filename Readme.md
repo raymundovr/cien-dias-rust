@@ -362,3 +362,6 @@ use siete::server::{get_celsius, get_farenheit};
 ```
 
 Lo mejor sería optar por tener módulos internos con sus dependencias claras https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+
+## Ocho
+El crate `termion` https://crates.io/crates/termion es útil para operar con la terminal.
