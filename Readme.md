@@ -3,200 +3,64 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
-## Uno
-Para leer argumentos de la línea de comandos
+## Ocho
+El crate `termion` https://crates.io/crates/termion es útil para operar con la terminal.
 
+## Siete
+
+Es mejor usar una `struct` y no un `type`. Una `struct` puede proveer funciones propias y sobrecargas.
+
+Sobrecargar `std::fmt::Display`
+```rust
+  impl fmt::Display for Celsius {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(f, "{} °C", self.0)
+        }
+    }
+```
+
+`main.rs` y `lib.rs` representan límites distintos dentro del `package`. Sólo puede existir un `mod ...` en todos los límites.
+
+```rust
+// lib.rs
+pub mod convertor;
+pub mod server;
+
+// main.rs
+
+use siete::server::{get_celsius, get_farenheit};
+```
+
+Lo mejor sería optar por tener módulos internos con sus dependencias claras https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+
+## Seis
+
+Siguiendo https://www.mongodb.com/developer/quickstart/rust-crud-tutorial/
+
+Para requerir variables de entorno
 ```rust
 use std::env;
-env::args();
+
+env::var("MONGODB_URI").expect("You must set the MONGODB_URI env var!");
 ```
 
-Para salir del programa
-```rust
-std::process::exit(n);
-```
+Para realizar las operaciones con Mongo se usa la macro `bson::doc!`.
 
-Para convertir argumentos en `str` hacia `usize`
+Para hacer la transformación de una `struct` se usa `serde`.
 ```rust
-use std::str::FromStr;
-
-let a: usize = 1;
-usize::from_str(&a).expect("Cannot convert");
-```
-## Dos
-Para hacer un `test` que tenga `panic!()`
-```rust
-#[test]
-#[should_panic]
-fn test_that_should_panic() {
-  ...
+#[derive(Debug, Deserialize, Serialize)]
+struct Movie {
+    #[serde(rename = "_id,", skip_serializing_if = "Option::is_none")]
+    id: Option<ObjectId>,
+    title: String,
+    year: u8,
+    plot: String,
+    #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
+    released: DateTime<Utc>,
 }
 ```
 
-También se puede convertir de `&str` a `usize` con
-```rust
-let a: &str = "a";
-a.parse::<usize>().expect("Invalid");
-```
-## Tres
-
-Para operar archivos se usa la _struct_ `std::fs::File`.
-
-Para manipular el contenido se carga el preludio `std::io::prelude::*`.
-
-Para leer línea por línea de un archivo
-```rust
-use std::fs::File;
-use std::io::BufReader;
-...
-let file = File::open(file_path);
-let buffer = BufReader::new(file);
-
-for line in buffer.lines() {
-  ...
-}
-...
-```
-
-Para convertir de `&[&str]` a `Vec<String>`:
-```rust
-let v = refs.iter().map(|a| String::from(*a)).collect();
-```
-
-Recordar derivar PartialEq para poder comparar valores de definiciones propias que están encapsuladas
-```rust
-#[derive(PartialEq)]
-enum Operation {
-  Add,
-  Mix,
-}
-...
-            let operation: Option<Operation> = match op {
-                "add" => Some(Operation::Add),
-                "mix" => Some(Operation::Mix),
-                _ => None,
-            };
-
-            if operation != None {
-                return Some(Instruction::new(operation.unwrap(), &segments[1..]));
-            } else {
-                return None;
-            }
-```
-Para obtener una conversión on un valor por default para un `&str`
-```rust
-usize::from_str(&x).ok().unwrap_or_default()
-```
-
-Para acceder a un `char` en una posición `i` de un `String`
-```rust
-let c = my_string.chars().nth(i).unwrap();
-```
-
-Escribir a archivos también tiene su macro:
-```rust
-let mut file = File::create("output.txt")?;
-
-// escribe una línea
-writeln!(file, "{}", content);
-
-// escribe sin salto de línea
-write!(file, "{}", content);
-```
-La macro es muy conveniente para `String`.
-
-
-Un `char` en unicode ocupa 2 bytes. Hay que tener cuidado con su manipulación para no desbordar. Ejemplo
-```rust
-let mx = "méxico";
-mx.len() == 7;
-mx.chars().count() == 6;
-
-// esto desborda
-mx.chars().nth(6);
-```
-
-## Cuatro
-
-Para manipular imágenes se puede usar el crate [image](https://docs.rs/image/0.23.3/image/).
-
-Ejemplos
-```rust
-// GenericImageView es un trait que debe ser cargado para poder inspeccionar una imagen.
-use image::{ GenericImageView, ImageError };
-
-fn main() -> Result<(), ImageError> {
-  let image = image::open(path)?;
-  Ok(())
-}
-
-```
-
-Separar módulos se logra creando archivos .rs que van a contener los módulos.
-
-Ejemplo
-```rust
-// src/generate.rs
-
-pub mod images {
-  pub fn single_pixel() {
-    ...
-  }
-}
-```
-
-Después se importan en el archivo que los va a utilizar como
-```rust
-mod generate;
-
-pub use crate::generate::images;
-
-fn main() {
-...
-  images::single_pixel();
-}
-```
-
-Para operar con un `path` se puede usar `std::path::Path`. Ejemplo
-```rust
-use std::path::Path;
-
-fn main() {
-  let path = Path::new("/home/r/file.png");
-  // la extensión -> Option(&OsStr)
-  path.extension();
-  // El nombre (sin extensión) -> Option(&OsStr)
-  path.file_stem();
-}
-```
-
-`U8` tiene opciones para ciclar el valor y evitar desbordar
-```rust
-let n: u8 = 250;
-
-// -> 25
-n.wrapping_add(30);
-
-// -> 250
-n.wrapping_sub(265)
-```
-
-También para añadir y restar topando en `u8::MAX` / `u8::MIN`
-```rust
-let n: u8 = 250;
-
-// 255
-n.saturating_add(100);
-
-// 0
-n.saturating_sub(300);
-```
-
-Destructurar un array se logra
-```rust
-// este ejemplo es breve para enfocar, ver el código de images::apply_filter() para la referencia correcta
-let [red, green, yellow, alpha] = *pixel;
-```
+El campo `id` es convertido a `_id` pero si es `None` no es convertido y se omite del documento.
 
 ## Cinco
 
@@ -306,62 +170,197 @@ async fn get_album(data: web::Data<AppState>, path: web::Path<String>) -> impl R
     web::Json(json!("not found")).customize().with_status(StatusCode::NOT_FOUND)
 }
 ```
+## Cuatro
 
-## Seis
+Para manipular imágenes se puede usar el crate [image](https://docs.rs/image/0.23.3/image/).
 
-Siguiendo https://www.mongodb.com/developer/quickstart/rust-crud-tutorial/
-
-Para requerir variables de entorno
+Ejemplos
 ```rust
-use std::env;
+// GenericImageView es un trait que debe ser cargado para poder inspeccionar una imagen.
+use image::{ GenericImageView, ImageError };
 
-env::var("MONGODB_URI").expect("You must set the MONGODB_URI env var!");
+fn main() -> Result<(), ImageError> {
+  let image = image::open(path)?;
+  Ok(())
+}
+
 ```
 
-Para realizar las operaciones con Mongo se usa la macro `bson::doc!`.
+Separar módulos se logra creando archivos .rs que van a contener los módulos.
 
-Para hacer la transformación de una `struct` se usa `serde`.
+Ejemplo
 ```rust
-#[derive(Debug, Deserialize, Serialize)]
-struct Movie {
-    #[serde(rename = "_id,", skip_serializing_if = "Option::is_none")]
-    id: Option<ObjectId>,
-    title: String,
-    year: u8,
-    plot: String,
-    #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
-    released: DateTime<Utc>,
+// src/generate.rs
+
+pub mod images {
+  pub fn single_pixel() {
+    ...
+  }
 }
 ```
 
-El campo `id` es convertido a `_id` pero si es `None` no es convertido y se omite del documento.
-
-## Siete
-
-Es mejor usar una `struct` y no un `type`. Una `struct` puede proveer funciones propias y sobrecargas.
-
-Sobrecargar `std::fmt::Display`
+Después se importan en el archivo que los va a utilizar como
 ```rust
-  impl fmt::Display for Celsius {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(f, "{} °C", self.0)
-        }
-    }
+mod generate;
+
+pub use crate::generate::images;
+
+fn main() {
+...
+  images::single_pixel();
+}
 ```
 
-`main.rs` y `lib.rs` representan límites distintos dentro del `package`. Sólo puede existir un `mod ...` en todos los límites.
-
+Para operar con un `path` se puede usar `std::path::Path`. Ejemplo
 ```rust
-// lib.rs
-pub mod convertor;
-pub mod server;
+use std::path::Path;
 
-// main.rs
-
-use siete::server::{get_celsius, get_farenheit};
+fn main() {
+  let path = Path::new("/home/r/file.png");
+  // la extensión -> Option(&OsStr)
+  path.extension();
+  // El nombre (sin extensión) -> Option(&OsStr)
+  path.file_stem();
+}
 ```
 
-Lo mejor sería optar por tener módulos internos con sus dependencias claras https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+`U8` tiene opciones para ciclar el valor y evitar desbordar
+```rust
+let n: u8 = 250;
 
-## Ocho
-El crate `termion` https://crates.io/crates/termion es útil para operar con la terminal.
+// -> 25
+n.wrapping_add(30);
+
+// -> 250
+n.wrapping_sub(265)
+```
+
+También para añadir y restar topando en `u8::MAX` / `u8::MIN`
+```rust
+let n: u8 = 250;
+
+// 255
+n.saturating_add(100);
+
+// 0
+n.saturating_sub(300);
+```
+
+Destructurar un array se logra
+```rust
+// este ejemplo es breve para enfocar, ver el código de images::apply_filter() para la referencia correcta
+let [red, green, yellow, alpha] = *pixel;
+```
+## Tres
+
+Para operar archivos se usa la _struct_ `std::fs::File`.
+
+Para manipular el contenido se carga el preludio `std::io::prelude::*`.
+
+Para leer línea por línea de un archivo
+```rust
+use std::fs::File;
+use std::io::BufReader;
+...
+let file = File::open(file_path);
+let buffer = BufReader::new(file);
+
+for line in buffer.lines() {
+  ...
+}
+...
+```
+
+Para convertir de `&[&str]` a `Vec<String>`:
+```rust
+let v = refs.iter().map(|a| String::from(*a)).collect();
+```
+
+Recordar derivar PartialEq para poder comparar valores de definiciones propias que están encapsuladas
+```rust
+#[derive(PartialEq)]
+enum Operation {
+  Add,
+  Mix,
+}
+...
+            let operation: Option<Operation> = match op {
+                "add" => Some(Operation::Add),
+                "mix" => Some(Operation::Mix),
+                _ => None,
+            };
+
+            if operation != None {
+                return Some(Instruction::new(operation.unwrap(), &segments[1..]));
+            } else {
+                return None;
+            }
+```
+Para obtener una conversión on un valor por default para un `&str`
+```rust
+usize::from_str(&x).ok().unwrap_or_default()
+```
+
+Para acceder a un `char` en una posición `i` de un `String`
+```rust
+let c = my_string.chars().nth(i).unwrap();
+```
+
+Escribir a archivos también tiene su macro:
+```rust
+let mut file = File::create("output.txt")?;
+
+// escribe una línea
+writeln!(file, "{}", content);
+
+// escribe sin salto de línea
+write!(file, "{}", content);
+```
+La macro es muy conveniente para `String`.
+
+
+Un `char` en unicode ocupa 2 bytes. Hay que tener cuidado con su manipulación para no desbordar. Ejemplo
+```rust
+let mx = "méxico";
+mx.len() == 7;
+mx.chars().count() == 6;
+
+// esto desborda
+mx.chars().nth(6);
+```
+## Dos
+Para hacer un `test` que tenga `panic!()`
+```rust
+#[test]
+#[should_panic]
+fn test_that_should_panic() {
+  ...
+}
+```
+
+También se puede convertir de `&str` a `usize` con
+```rust
+let a: &str = "a";
+a.parse::<usize>().expect("Invalid");
+```
+
+## Uno
+Para leer argumentos de la línea de comandos
+
+```rust
+use std::env;
+env::args();
+```
+
+Para salir del programa
+```rust
+std::process::exit(n);
+```
+
+Para convertir argumentos en `str` hacia `usize`
+```rust
+use std::str::FromStr;
+
+let a: usize = 1;
+usize::from_str(&a).expect("Cannot convert");
+```
