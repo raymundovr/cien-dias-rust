@@ -3,6 +3,37 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Nueve
+🚀 WASM
+
+El proyecto se inicializa como librería con dependencias a `wasm-bindgen`. En el lib.rs cargamos el preludio y cada función se marca con la macro `#[wasm_bindgen]`.
+
+Las funciones de JS se marcan como externas
+```rust
+#[wasm_bindgen]
+extern {
+    fn alert(s: &str);
+}
+```
+Para luego ser utilizadas de la forma en la que se espera
+```rust
+#[wasm_bindgen]
+pub fn greet() {
+    alert("Hello, world!");
+}
+```
+
+Para compilar a WASM se require la utilidad [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/). Posteriormente se ejecuta `wasm-pack build` en el directorio del proyecto.
+
+Para enlazar con una página web se utiliza defacto [create-wasm-app](https://github.com/rustwasm/create-wasm-app) con `npm init wasm-app <target_dir>`. Esto genera un proyecto en node con webpack que sólo necesita ser modificado en las dependencias para enlazar correctamente al proyecto en wasm que se ha generado.
+
+```json
+"dependencies": {
+  "nueve": "file:../pkg"
+},
+```
+
+
 ## Ocho
 El crate `termion` https://crates.io/crates/termion es útil para operar con la terminal.
 
