@@ -33,6 +33,15 @@ Para enlazar con una página web se utiliza defacto [create-wasm-app](https://gi
 },
 ```
 
+Las estructuras que van a dialogar con el navegador también están rodeadas por `#[wasm_bindgen]`. La representación de datos no puede ser otra que valores escalares (u8, i32, f64, etc). Si se intenta retornar un dato no soportado se obtiene el error `the trait `IntoWasmAbi` is not implemented for...`.
+
+Aunque [es posible serializarlo](https://rustwasm.github.io/wasm-bindgen/reference/arbitrary-data-with-serde.html) el diseño de una interfaz entre WASM y JS debe buscar optimizar:
+1. Minimizar la copia hacia y fuera de la memoria linear de WASM.
+2. Minimizar serialización y deserialización.
+
+De lo contrario provoca costos extras en el proceso.
+
+👍 _Una buena interfaz JS ↔ WASM es a menudo una en donde grandes y longevas estructuras de datos son implementadas como tipos de datos en Rust que viven en la memoria linea de WASM y son expuestas a JS como manejadores opacos_. JS invoca funciones exportadas por WASM que toman estos manejadores opacos, transforman sus datos, realizan cómputos pesados, consultan los datos y finalmente retornan un resultado pequeño y copiable. Retornar un resultado pequeño del cómputo evita serializar o deserializar entre el GC heap de JS y la memoria linear de WASM.
 
 ## Ocho
 El crate `termion` https://crates.io/crates/termion es útil para operar con la terminal.
