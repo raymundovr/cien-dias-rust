@@ -2,6 +2,51 @@
 # 💯🦀
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
+## Negación
+Rust uses ! instead of ~ for bitwise NOT:
+```rust
+let hi: u8 = 0xe0;
+let lo = !hi;  // 0x1f
+```
+This means that !n can’t be used on an integer n to mean “n is zero.” For that, write n == 0
+
+## Labels y loops
+A loop can be labeled with a lifetime. In the following example, 'search: is a label for the outer for loop. Thus, break 'search exits that loop, not the 
+inner loop:
+
+```rust
+'search:
+for room in apartment {
+    for spot in room.hiding_spots() {
+        if spot.contains(keys) {
+            println!("Your keys are {} in the {}.", spot, room);
+            break 'search;
+        }
+    }
+}
+```
+
+A break can have both a label and a value expression:
+
+```rust
+// Find the square root of the first perfect square
+// in the series.
+let sqrt = 'outer: loop {
+    let n = next_number();
+    for i in 1.. {
+        let square = i * i;
+        if square == n {
+            // Found a square root.
+            break 'outer i;
+        }
+        if square > n {
+            // `n` isn't a perfect square, try the next
+            break;
+        }
+    }
+};
+```
+Labels can also be used with continue
 
 ## Nueve
 🚀 WASM
