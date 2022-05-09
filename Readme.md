@@ -37,7 +37,21 @@ Para poder utilizar esta función se requiere envolver los errores. Una forma de
 type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>; // Pasar entre hilos y vivir durante todo el programa
 type GenericResult<T> = Result<T, GenericError>;
 ```
+###Anyhow
 
+Con el trait [anyhow](https://crates.io/crates/anyhow) se pueden derivar errores sin tener que envolverlos en un tipo genérico como anteriormente.
+
+```rust
+use anyhow::Result;
+
+fn read_integers(file: &mut dyn BufRead) -> Result<Vec<i64>> {
+  ...
+}
+
+fn main() -> Result<()> {
+  ...
+}
+```
 
 ## Negación
 Rust uses ! instead of ~ for bitwise NOT:
