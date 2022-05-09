@@ -37,9 +37,9 @@ Para poder utilizar esta función se requiere envolver los errores. Una forma de
 type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>; // Pasar entre hilos y vivir durante todo el programa
 type GenericResult<T> = Result<T, GenericError>;
 ```
-###Anyhow
+### Anyhow
 
-Con el trait [anyhow](https://crates.io/crates/anyhow) se pueden derivar errores sin tener que envolverlos en un tipo genérico como anteriormente.
+Con el crate [anyhow](https://crates.io/crates/anyhow) se pueden derivar errores sin tener que envolverlos en un tipo genérico como anteriormente.
 
 ```rust
 use anyhow::Result;
@@ -52,6 +52,29 @@ fn main() -> Result<()> {
   ...
 }
 ```
+
+### Thiserror
+
+El crate [thiserror](https://crates.io/crates/thiserror) permite definir `enums` y `structs` con los cuales derivar std::error:Error de forma sencilla.
+
+```rust
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+enum ParserErrors {
+    #[error("Error Reading File")]
+    IoError(#[from] std::io::Error),
+    #[error("Error Parting")]
+    ParserError(#[from] std::num::ParseIntError)
+}
+```
+Los elementos del `enum` reflejan los tipos de errores que se pueden encontrar en las funciones que envuelven.
+
+```rust
+fn read_integers(file: &mut dyn BufRead) ->Result<Vec<i64>, ParserErrors> { ... }
+fn main() -> Result<(), ParserErrors> { ... }
+```
+
 
 ## Negación
 Rust uses ! instead of ~ for bitwise NOT:
