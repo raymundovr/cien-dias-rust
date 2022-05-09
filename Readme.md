@@ -2,6 +2,43 @@
 # 💯🦀
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
+
+## Diez
+
+El operador `?` eleva el error hacia la función externa que lo invocó. Los errores arrojados dentro de una función pueden ser de varios tipos, creando en ocasiones error de parseo. Por ejemplo
+```rust
+use std::io::{self, BufRead};
+
+/// Read integers from a text file.
+/// The file should have one number on each line.
+fn read_numbers(file: &mut dyn BufRead) -> Result<Vec<i64>, io::Error> {
+    let mut numbers = vec![];
+    for line_result in file.lines() {
+        let line = line_result?;         // reading lines can fail
+        numbers.push(line.parse()?);     // parsing integers can fail
+    }
+    Ok(numbers)
+}
+```
+```
+error: `?` couldn't convert the error to `std::io::Error`
+
+  numbers.push(line.parse()?);     // parsing integers can fail
+                           ^
+            the trait `std::convert::From<std::num::ParseIntError>`
+            is not implemented for `std::io::Error`
+
+note: the question mark operation (`?`) implicitly performs a conversion
+on the error value using the `From` trait
+```
+
+Para poder utilizar esta función se requiere envolver los errores. Una forma de hacerlo es mediante un error genérico definido como
+```rust
+type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>; // Pasar entre hilos y vivir durante todo el programa
+type GenericResult<T> = Result<T, GenericError>;
+```
+
+
 ## Negación
 Rust uses ! instead of ~ for bitwise NOT:
 ```rust
