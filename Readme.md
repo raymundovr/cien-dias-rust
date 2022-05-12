@@ -3,6 +3,162 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Modules
+
+Se puede definir un módulo de tres formas
+1. Módulo en archivo propio: my_mod.rs
+2. Módulo en directorio que incluye un archivo mod.rs
+3. Módulo en archivo propio, my_mod.rs, con directorio del mismo nombre, my_mod, que incluye submódulos: my_submod_uno.rs, my_submod_dos.rs
+
+Es posible definir la visibilidad pública de un submódulo mediante `pub(in <path>)`
+
+```rust
+mod plant_structures {
+    pub mod roots {
+        pub mod products {
+            pub(in crate::plant_structures::roots) struct Cytokinin {
+                ...
+            }
+        }
+
+        use products::Cytokinin; // ok: in `roots` module
+    }
+
+    use roots::products::Cytokinin; // error: `Cytokinin` is private
+}
+
+// error: `Cytokinin` is private
+use plant_structures::roots::products::Cytokinin;
+```
+
+Se puede usar `as` para un alias local
+```rust
+use std::io::Result as IOResult;
+```
+
+Submódulos pueden invocar `super` o `crate` para importar las funcionalidades de otro submódulo
+```rust
+// proteins/mod.rs
+pub enum AminoAcid { ... }
+pub mod synthesis;
+
+// proteins/synthesis.rs
+use super::AminoAcid;  // explicitly import from parent
+
+// proteins/synthesis.rs
+use crate::proteins::AminoAcid;  // explicitly import relative to crate root
+```
+
+Submódulos pueden acceder elementos privados del módulo con `use super::*;`
+
+`std::prelude::v1` es siempre importado automáticamente. Es donde Vec y Result residen. [Ver](https://doc.rust-lang.org/std/prelude/v1/)
+
+
+```rust
+pub const ROOM_TEMPERATURE: f64 = 20.0;  // degrees Celsius
+pub static ROOM_TEMPERATURE: f64 = 68.0;  // degrees Fahrenheit
+```
+`const` es replicado en el código cada vez que se usa. `static` es cargado al inicio y vive hasta que el programa se cierra.
+
+### Once
+
+Es posible alojar una librería `lib.rs` y un ejecutable que usa dicha librería en el directorio `src/bin` del proyecto.
+
+La definición en Cargo.toml juega un papel importante
+```toml
+[package]
+name = "once"
+...
+```
+El ejecutable se define como
+```rust
+// growing.rs
+use once::Module::...
+```
+Para usar se compila y luego se ejecuta ```
+; cargo build
+; cargo run --bin growing
+```
+
+Cuando la librería crece lo suficiente es mejor almacenarla en su propio crate e importarlo
+```
+[dependencies]
+fern_sim = { path = "../fern_sim" }
+```
+## Attributes
+Algunos ejemplos
+```rust
+#[allow(non_camel_case_types)]
+pub struct git_revspec {
+    ...
+}
+
+// Only include this module in the project if we're building for Android.
+// Lista completa https://doc.rust-lang.org/reference/conditional-compilation.html
+#[cfg(target_os = "android")]
+mod mobile;
+
+// https://matklad.github.io/2021/07/09/inline-in-rust.html
+/// Adjust levels of ions etc. in two adjacent cells
+/// due to osmosis between them.
+#[inline]
+fn do_osmosis(c1: &mut Cell, c2: &mut Cell) {
+    ...
+}
+
+// To whole file
+// libgit2_sys/lib.rs
+#![allow(non_camel_case_types)]
+
+pub struct git_revspec {
+    ...
+}
+
+pub struct git_error {
+    ...
+}
+```
+`#!` le indica al compilador que el atributo debe ser aplicado a todo el elemento (el archivo en este caso).
+
+`#![feature(...)]` Es usado para probar `features` inestables.
+
+## Tests y documentación
+```rust
+#[test]
+#[allow(unconditional_panic, unused_must_use)]
+#[should_panic(expected="divide by zero")]
+fn test...() { }
+```
+
+Se puede usar `Result<T, Err>` para los tests
+
+```rust
+use std::num::ParseIntError;
+
+/// This test will pass if "1024" is a valid number, which it is.
+#[test]
+fn explicit_radix() -> Result<(), ParseIntError> {
+  i32::from_str_radix("1024", 10)?;
+  Ok(())
+}
+```
+
+```rust
+#[cfg(test)]   // include this module only when testing
+mod tests {
+    fn roughly_equal(a: f64, b: f64) -> bool {
+        (a - b).abs() < 1e-6
+    }
+
+    #[test]
+    fn trig_works() {
+        use std::f64::consts::PI;
+        assert!(roughly_equal(PI.sin(), 0.0));
+    }
+}
+```
+
+
 ## Diez
 
 El operador `?` eleva el error hacia la función externa que lo invocó. Los errores arrojados dentro de una función pueden ser de varios tipos, creando en ocasiones error de parseo. Por ejemplo
