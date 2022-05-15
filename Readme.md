@@ -3,6 +3,14 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Canvas Plotter
+[JS-Sys](https://docs.rs/js-sys/0.3.57/js_sys/) es un crate que ofrece una interfaz entre Rust + WASM y los objetos globales disponibles en JS.
+
+[Web-Sys](https://rustwasm.github.io/wasm-bindgen/api/web_sys/) es un crate que ofrece interfaces con Web APIs. Mediante este crate se puede usar el canvas. Cada API se carga independientemente mediante _features_.
+
+Usar el atributo `#[wasm_bindgen(start)]` indica que la función que decora será ejectuada inmediatamente después de instanciar el módulo en cada hilo.
+https://rustwasm.github.io/wasm-bindgen/reference/attributes/on-rust-exports/start.html
+
 ## Modules
 
 Se puede definir un módulo de tres formas
@@ -281,7 +289,16 @@ Labels can also be used with continue
 ## Nueve
 🚀 WASM
 
-El proyecto se inicializa como librería con dependencias a `wasm-bindgen`. En el lib.rs cargamos el preludio y cada función se marca con la macro `#[wasm_bindgen]`.
+El proyecto se inicializa como librería con dependencias a `wasm-bindgen`. También hay que especificar que es una "cdylib".
+```toml
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.80"
+```
+
+En el lib.rs cargamos el preludio y cada función se marca con la macro `#[wasm_bindgen]`.
 
 Las funciones de JS se marcan como externas
 ```rust
