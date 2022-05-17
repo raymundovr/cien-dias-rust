@@ -3,6 +3,35 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Counter WASM
+Al usar la estructura en JS los métodos que construyen son estáticos, para usarlos hay que invocarlos
+```rust
+#[wasm_bindgen]
+impl State {
+    pub fn new() -> State {
+        State { count: 0 }
+    }
+}
+```
+Se usa como
+```javascript
+import { State } from 'count';
+
+const state = State.new();
+```
+
+Los métodos que usan esta nueva instancia son parte de ella
+
+```rust
+pub fn increment(&mut self) {
+    self.count += 1;
+}
+```
+
+Se usa como
+```javascript
+state.increment();
+```
 ## Canvas Plotter
 [JS-Sys](https://docs.rs/js-sys/0.3.57/js_sys/) es un crate que ofrece una interfaz entre Rust + WASM y los objetos globales disponibles en JS.
 
