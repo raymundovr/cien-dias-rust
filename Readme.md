@@ -3,6 +3,23 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Match Patterns
+Pattern type|Example|Notes
+---|---|---
+Literal| 100 , "name"|Matches an exact value; the name of a const is also allowed
+Range| 0 ..= 100, 'a' ..= 'k', 256..|Matches any value in range, including the end value if given
+Wildcard|_|Matches any value and ignores it
+Variable|name, mut count|Like _ but moves or copies the value into a new local variable
+ref variable|ref field, ref mut field|Borrows a reference to the matched value instead of moving or copying it
+Binding with subpattern|val @ 0 ..= 99, ref circle @ Shape::Circle { .. }|Matches the pattern to the right of @, using the variable name to the left
+Enum pattern|Some(value), None,Pet::Orca|
+Tuple pattern|(key, value), (r, g, b)|
+Array pattern|[a, b, c, d, e, f, g], [heading, carom, correction]|
+Slice pattern|[first, second], [first, _, third], [first, .., nth], []|
+Struct pattern|Color(r, g, b), Point { x, y }, Card { suit: Clubs, rank: n }, Account { id, name, .. }
+Reference|&value, &(k, v)|Matches only reference values
+Or patterns|'a' &brvbar; 'A', Some("left" &brvbar; "right")|
+Guard expression|x if x * x <= r2|In match only (not valid in let, etc.)
 ## Counter WASM
 Al usar la estructura en JS los métodos que construyen son estáticos, para usarlos hay que invocarlos
 ```rust
