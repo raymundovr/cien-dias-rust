@@ -1,3 +1,4 @@
+mod auth;
 mod general;
 
 use actix_web::{App, HttpServer};
