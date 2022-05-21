@@ -1,6 +1,6 @@
 use actix_web::{HttpResponse, post, Responder, web};
 use serde::{Deserialize, Serialize};
-use serde_json;
+use serde_json::json;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Credentials {
@@ -8,19 +8,20 @@ struct Credentials {
     password: String,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
 struct TokenResponse {
     success: bool,
+    #[serde(skip_serializing_if="Option::is_none")]
     token: Option<String>,
 }
 
 #[post("/login")]
 async fn login(data: web::Json<Credentials>) -> impl Responder {
     if data.username == "ray".to_string() && data.password == "test".to_string() {
-        return HttpResponse::Ok()
+        return HttpResponse::Ok().json(json!(TokenResponse{ success: true, token: None }));
     }
 
-    HttpResponse::Unauthorized()
+    HttpResponse::Unauthorized().json(json!(TokenResponse{ success: false, token: None }))
 }
 
 #[cfg(test)]
@@ -38,9 +39,9 @@ mod test {
         };
 
         let req = test::TestRequest::post().uri("/login").set_json(credentials).to_request();
-        let resp = test::call_service(&app, req).await;
+        let resp: TokenResponse = test::call_and_read_body_json(&app, req).await;
 
-        assert_eq!(resp.status(), 200);
+        assert_eq!(resp, TokenResponse{ success: true, token: None });
     }
 
     #[actix_web::test]
