@@ -42,4 +42,17 @@ mod test {
 
         assert_eq!(resp.status(), 200);
     }
+
+    #[actix_web::test]
+    async fn test_login_incorrect_credentials() {
+        let app = test::init_service(App::new().service(login)).await;
+        let credentials = Credentials {
+            username: "something".to_string(),
+            password: "wrong".to_string(),
+        };
+        let req = test::TestRequest::post().uri("/login").set_json(credentials).to_request();
+        let resp = test::call_service(&app, req).await;
+
+        assert_eq!(resp.status(), 401);
+    }
 }
