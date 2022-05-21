@@ -1,5 +1,6 @@
 mod auth;
 mod general;
+mod token;
 
 use actix_web::{App, HttpServer};
 use general::health_check;
