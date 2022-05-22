@@ -276,7 +276,7 @@ use thiserror::Error;
 enum ParserErrors {
     #[error("Error Reading File")]
     IoError(#[from] std::io::Error),
-    #[error("Error Parting")]
+    #[error("Error Parsing")]
     ParserError(#[from] std::num::ParseIntError)
 }
 ```
