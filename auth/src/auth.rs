@@ -1,7 +1,7 @@
 use actix_web::{HttpResponse, post, Responder, web};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use crate::token::generate_token;
+use crate::token::generate;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Credentials {
@@ -18,10 +18,10 @@ struct TokenResponse {
 
 #[post("/login")]
 async fn login(data: web::Json<Credentials>) -> impl Responder {
-    if data.username == "ray".to_string() && data.password == "test".to_string() {
-        match generate_token() {
-            Ok(token) => return HttpResponse::Ok().json(json!(TokenResponse{ success: true, token: Some(token) })),
-            Err(_) => return HttpResponse::InternalServerError().json(json!(TokenResponse{success: false, token: None })),
+    if data.username == "ray" && data.password == "test" {
+        return match generate(&data.username) {
+            Ok(token) => HttpResponse::Ok().json(json!(TokenResponse{ success: true, token: Some(token) })),
+            Err(_) => HttpResponse::InternalServerError().json(json!(TokenResponse{ success: false, token: None }))
         }
     }
 
