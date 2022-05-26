@@ -1,5 +1,6 @@
 use crate::token::generate;
-use actix_session::Session;
+//use actix_session::Session;
+use actix_identity::Identity;
 use actix_web::{post, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -41,16 +42,10 @@ async fn login_token(data: web::Json<Credentials>) -> impl Responder {
 #[post("/login/session")]
 async fn login_session(
     data: web::Json<Credentials>,
-    session: Session,
+    id: Identity,
 ) -> Result<HttpResponse, actix_web::Error> {
     if data.username == "ray" && data.password == "test" {
-        session.insert(
-            "auth.session",
-            TokenResponse {
-                success: true,
-                token: None,
-            },
-        )?;
+        id.remember(data.username.to_owned());
 
         return Ok(HttpResponse::Ok().finish());
     }
