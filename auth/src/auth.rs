@@ -1,4 +1,5 @@
 use crate::token::generate;
+use actix_session::Session;
 use actix_web::{post, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -37,11 +38,30 @@ async fn login_token(data: web::Json<Credentials>) -> impl Responder {
     }))
 }
 
+#[post("/login/session")]
+async fn login_session(
+    data: web::Json<Credentials>,
+    session: Session,
+) -> Result<HttpResponse, actix_web::Error> {
+    if data.username == "ray" && data.password == "test" {
+        session.insert(
+            "auth.session",
+            TokenResponse {
+                success: true,
+                token: None,
+            },
+        )?;
+
+        return Ok(HttpResponse::Ok().finish());
+    }
+    Ok(HttpResponse::Unauthorized().finish())
+}
 
 #[cfg(test)]
 mod test {
     use super::*;
-    use actix_web::{test, App};
+    use actix_session::{storage::CookieSessionStore, SessionMiddleware};
+    use actix_web::{cookie::Key, test, App};
 
     #[actix_web::test]
     async fn test_login_right_credentials() {
@@ -75,5 +95,55 @@ mod test {
         let resp = test::call_service(&app, req).await;
 
         assert_eq!(resp.status(), 401);
+    }
+
+    #[actix_web::test]
+    async fn test_login_session() {
+        let app = test::init_service(
+            App::new()
+                .wrap(SessionMiddleware::new(
+                    CookieSessionStore::default(),
+                    Key::generate(),
+                ))
+                .service(login_session),
+        )
+        .await;
+        let credentials = Credentials {
+            username: "ray".to_string(),
+            password: "test".to_string(),
+        };
+        let req = test::TestRequest::post()
+            .uri("/login/session")
+            .set_json(json!(credentials))
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        let set_cookie_header = resp.headers().get("set-cookie");
+        assert!(set_cookie_header.is_some());
+    }
+
+    #[actix_web::test]
+    async fn test_incorrect_login_session() {
+        let app = test::init_service(
+            App::new()
+                .wrap(SessionMiddleware::new(
+                    CookieSessionStore::default(),
+                    Key::generate(),
+                ))
+                .service(login_session),
+        )
+        .await;
+        let credentials = Credentials {
+            username: "nope".to_string(),
+            password: "nothing".to_string(),
+        };
+        let req = test::TestRequest::post()
+            .uri("/login/session")
+            .set_json(json!(credentials))
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+
+        assert_eq!(resp.status(), 401);
+        let set_cookie_header = resp.headers().get("set-cookie");
+        assert!(set_cookie_header.is_none());
     }
 }
