@@ -16,8 +16,8 @@ struct TokenResponse {
     token: Option<String>,
 }
 
-#[post("/login")]
-async fn login(data: web::Json<Credentials>) -> impl Responder {
+#[post("/login/token")]
+async fn login_token(data: web::Json<Credentials>) -> impl Responder {
     if data.username == "ray" && data.password == "test" {
         return match generate(&data.username) {
             Ok(token) => HttpResponse::Ok().json(json!(TokenResponse {
@@ -37,6 +37,7 @@ async fn login(data: web::Json<Credentials>) -> impl Responder {
     }))
 }
 
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -44,7 +45,7 @@ mod test {
 
     #[actix_web::test]
     async fn test_login_right_credentials() {
-        let app = test::init_service(App::new().service(login)).await;
+        let app = test::init_service(App::new().service(login_token)).await;
 
         let credentials = Credentials {
             username: "ray".to_string(),
@@ -52,7 +53,7 @@ mod test {
         };
 
         let req = test::TestRequest::post()
-            .uri("/login")
+            .uri("/login/token")
             .set_json(credentials)
             .to_request();
         let resp: TokenResponse = test::call_and_read_body_json(&app, req).await;
@@ -62,13 +63,13 @@ mod test {
 
     #[actix_web::test]
     async fn test_login_incorrect_credentials() {
-        let app = test::init_service(App::new().service(login)).await;
+        let app = test::init_service(App::new().service(login_token)).await;
         let credentials = Credentials {
             username: "something".to_string(),
             password: "wrong".to_string(),
         };
         let req = test::TestRequest::post()
-            .uri("/login")
+            .uri("/login/token")
             .set_json(credentials)
             .to_request();
         let resp = test::call_service(&app, req).await;
