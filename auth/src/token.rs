@@ -1,9 +1,9 @@
-use jsonwebtoken::{EncodingKey, Header, encode};
+use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Claims {
-    #[serde(rename="iss")]
+    #[serde(rename = "iss")]
     issuer: String,
     name: String,
 }
@@ -14,5 +14,9 @@ pub fn generate(username: &str) -> Result<String, jsonwebtoken::errors::Error> {
         name: username.to_string(),
     };
 
-    encode(&Header::default(), &claims, &EncodingKey::from_secret(b"secret: &[u8]"))
+    encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(b"secret: &[u8]"),
+    )
 }

@@ -8,7 +8,7 @@ pub async fn health_check() -> impl Responder {
 #[cfg(test)]
 mod test {
     use super::*;
-    use actix_web::{App, test};
+    use actix_web::{test, App};
 
     #[actix_web::test]
     async fn test_health_check() {
