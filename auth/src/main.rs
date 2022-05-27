@@ -1,7 +1,7 @@
+mod app;
 mod auth;
 mod general;
 mod token;
-mod app;
 
 use app::launch_server;
 use env_logger::Env;
