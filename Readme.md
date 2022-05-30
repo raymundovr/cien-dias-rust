@@ -3,6 +3,12 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Auth0
+https://crates.io/crates/actix-web-httpauth
+https://crates.io/crates/envy
+https://docs.rs/actix-web/4.0.1/actix_web/trait.FromRequest.html#implementing-an-extractor
+
+
 ## Match Patterns
 https://doc.rust-lang.org/reference/patterns.html
 
