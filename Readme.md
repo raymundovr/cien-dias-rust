@@ -3,10 +3,16 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## En Saludario
+Tests en carpeta separada sólo funcionan si es una librería, es decir, tienen un lib.rs
+
 ## Auth0
 https://crates.io/crates/actix-web-httpauth
 https://crates.io/crates/envy
 https://docs.rs/actix-web/4.0.1/actix_web/trait.FromRequest.html#implementing-an-extractor
+
+Se puede usar esto para extraer las credentiales de un "authorization: Berarer ****"
+https://docs.rs/crate/actix-web-httpauth/0.6.0/source/examples/middleware-closure.rs
 
 
 ## Match Patterns
