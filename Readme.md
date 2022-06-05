@@ -6,6 +6,23 @@ Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secue
 ## En Saludario
 Tests en carpeta separada sólo funcionan si es una librería, es decir, tienen un lib.rs
 
+## Actix y anyhow
+```rust
+use anyhow::Result;
+
+#[actix_web::main]
+async fn main() -> Result<()> {
+  ...
+  HttpServer::new(|| {
+        App::new()
+        ...
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+    .map_err(anyhow::Error::from)
+}
+```
 ## Auth0
 https://crates.io/crates/actix-web-httpauth
 https://crates.io/crates/envy
