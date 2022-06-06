@@ -3,6 +3,49 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Mongo
+
+Aplicando una generalización a CRUD en Mongo.
+
+
+```rust
+pub mod crud {
+    pub trait MongoDbModel {
+        fn collection_name(&self) -> String;
+    }
+    use anyhow::Result;
+    use mongodb::results::InsertOneResult;
+    use mongodb::Database;
+    use serde::{Deserialize, Serialize};
+
+    pub async fn create<'de, I: Deserialize<'de> + Serialize + MongoDbModel>(
+        instance: &I,
+        database: &Database,
+    ) -> Result<InsertOneResult> {
+        let collection = database.collection::<I>(&instance.collection_name());
+        let insert_result = collection.insert_one(instance, None).await?;
+        Ok(insert_result)
+    }
+}
+```
+
+```rust
+#[derive(Deserialize, Serialize)]
+pub struct User {
+    #[serde(rename="_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub name: String,
+    #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
+    pub created_at: DateTime<Utc>,
+}
+
+impl MongoDbModel for User {
+    fn collection_name(&self) -> String {
+        "users".to_string()
+    }
+}
+```
+
 ## En Saludario
 Tests en carpeta separada sólo funcionan si es una librería, es decir, tienen un lib.rs
 
