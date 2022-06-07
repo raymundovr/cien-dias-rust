@@ -3,6 +3,24 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Formatting
+### Format string directives for text
+
+Default	"{}"	"bookends"
+Minimum field width	"{:4}"	"bookends"
+ 	"{:12}"	"bookends    "
+Text length limit	"{:.4}"	"book"
+ 	"{:.12}"	"bookends"
+Field width, length limit	"{:12.20}"	"bookends    "
+ 	"{:4.20}"	"bookends"
+ 	"{:4.6}"	"booken"
+ 	"{:6.4}"	"book  "
+Aligned left, width	"{:<12}"	"bookends    "
+Centered, width	"{:^12}"	"  bookends  "
+Aligned right, width	"{:>12}"	"    bookends"
+Pad with '=', centered, width	"{:=^12}"	"==bookends=="
+Pad '*', aligned right, width, limit	"{:*>12.4}"	"********book"
+
 ## Mongo
 
 Aplicando una generalización a CRUD en Mongo.
