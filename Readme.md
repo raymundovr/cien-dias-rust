@@ -3,6 +3,22 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Files
+Define opciones para abrir.
+
+```rust
+use std::fs::OpenOptions;
+
+let log = OpenOptions::new()
+    .append(true)  // if file exists, add to the end
+    .open("server.log")?;
+
+let file = OpenOptions::new()
+    .write(true)
+    .create_new(true)  // fail if file exists
+    .open("new_file.txt")?;
+```
+
 ## Formatting
 ### Format string directives for text
 
