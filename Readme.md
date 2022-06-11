@@ -3,6 +3,13 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Chrono
+Para ser usado con serde
+```toml
+# Cargo.toml
+chrono = {version = "0.4", features = ["serde"] }
+```
+
 ## Mongo
 
 Aplicando una generalización a CRUD en Mongo.
