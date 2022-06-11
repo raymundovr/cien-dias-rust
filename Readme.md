@@ -10,6 +10,79 @@ Para ser usado con serde
 chrono = {version = "0.4", features = ["serde"] }
 ```
 
+## Files
+Define opciones para abrir.
+
+```rust
+use std::fs::OpenOptions;
+
+let log = OpenOptions::new()
+    .append(true)  // if file exists, add to the end
+    .open("server.log")?;
+
+let file = OpenOptions::new()
+    .write(true)
+    .create_new(true)  // fail if file exists
+    .open("new_file.txt")?;
+```
+
+## Formatting
+### Format string directives for text
+
+Default	"{}"	"bookends"
+
+Minimum field width	"{:4}"	"bookends"
+ 	"{:12}"	"bookends    "
+
+Text length limit	"{:.4}"	"book"
+ 	"{:.12}"	"bookends"
+Field width, length limit	"{:12.20}"	"bookends    "
+ 	"{:4.20}"	"bookends"
+ 	"{:4.6}"	"booken"
+ 	"{:6.4}"	"book  "
+Aligned left, width	"{:<12}"	"bookends    "
+Centered, width	"{:^12}"	"  bookends  "
+Aligned right, width	"{:>12}"	"    bookends"
+Pad with '=', centered, width	"{:=^12}"	"==bookends=="
+Pad '*', aligned right, width, limit	"{:*>12.4}"	"********book"
+
+## Integers
+Default	"{}"	"1234"
+Forced sign	"{:+}"	"+1234"
+Minimum field width	"{:12}"	"        1234"
+ 	"{:2}"	"1234"
+Sign, width	"{:+12}"	"       +1234"
+Leading zeros, width	"{:012}"	"000000001234"
+Sign, zeros, width	"{:+012}"	"+00000001234"
+Aligned left, width	"{:<12}"	"1234        "
+Centered, width	"{:^12}"	"    1234    "
+Aligned right, width	"{:>12}"	"        1234"
+Aligned left, sign, width	"{:<+12}"	"+1234       "
+Centered, sign, width	"{:^+12}"	"   +1234    "
+Aligned right, sign, width	"{:>+12}"	"       +1234"
+Padded with '=', centered, width	"{:=^12}"	"====1234===="
+Binary notation	"{:b}"	"10011010010"
+Width, octal notation	"{:12o}"	"        2322"
+Sign, width, hexadecimal notation	"{:+12x}"	"        +4d2"
+Sign, width, hex with capital digits	"{:+12X}"	"        +4D2"
+Sign, explicit radix prefix, width, hex	"{:+#12x}"	"      +0x4d2"
+Sign, radix, zeros, width, hex	"{:+#012x}"	"+0x0000004d2"
+ 	"{:+#06x}"	"+0x4d2"
+
+## Floating point
+Default	"{}"	"1234.5678"
+Precision	"{:.2}"	"1234.57"
+ 	"{:.6}"	"1234.567800"
+Minimum field width	"{:12}"	"   1234.5678"
+Minimum, precision	"{:12.2}"	"     1234.57"
+ 	"{:12.6}"	" 1234.567800"
+Leading zeros, minimum, precision	"{:012.6}"	"01234.567800"
+Scientific	"{:e}"	"1.2345678e3"
+Scientific, precision	"{:.3e}"	"1.235e3"
+Scientific, minimum, precision	"{:12.3e}"	"     1.235e3"
+ 	"{:12.3E}"	"     1.235E3"
+
+
 ## Mongo
 
 Aplicando una generalización a CRUD en Mongo.
