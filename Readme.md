@@ -3,6 +3,10 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## CROS
+La create `actix_cors` opera este modo.
+
+
 ## Chrono
 Para ser usado con serde
 ```toml
@@ -106,8 +110,30 @@ pub mod crud {
         let insert_result = collection.insert_one(instance, None).await?;
         Ok(insert_result)
     }
+
+    pub async fn get_as_vec<I>(
+        db: &Database,
+        filter: Option<Document>,
+        options: Option<FindOptions>,
+    ) -> Vec<I>
+    where
+        I: MongoDbModel + DeserializeOwned + Unpin + Send + Sync,
+    {
+        let col = db.collection::<I>(&I::collection_name());
+        let mut cursor = match col.find(filter, options).await {
+            Ok(cursor) => cursor,
+            Err(_) => return vec![],
+        };
+        let mut documents: Vec<I> = Vec::new();
+        while let Ok(Some(doc)) = cursor.try_next().await {
+            documents.push(doc);
+        }
+        documents
+    }
 }
 ```
+
+`Cursor<T>` sólo puede ser colectado en `Vec` si se implementa `DeserializeOwned + Unpin + Send + Sync`
 
 ```rust
 #[derive(Deserialize, Serialize)]
