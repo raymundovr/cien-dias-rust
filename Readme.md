@@ -3,7 +3,28 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
-## CROS
+## ObjectId + Serialize + String
+```rust
+use serde::Serializer;
+use mongodb::bson::oid::ObjectId;
+
+pub fn serialize_option_oid_as_string<S>(oid: &Option<ObjectId>, serializer: S) -> Result<S::Ok, S::Error> 
+    where S: Serializer
+{
+    match oid {
+        Some(ref oid) => serializer.serialize_some(oid.to_string().as_str()),
+        None => serializer.serialize_none()
+    }
+}
+
+pub fn serialize_oid_as_string<S>(oid: &ObjectId, serializer: S) -> Result<S::Ok, S::Error>
+    where S: Serializer
+{
+    serializer.serialize_str(oid.to_string().as_str())
+}
+```
+
+## CORS
 La create `actix_cors` opera este modo.
 
 
