@@ -3,6 +3,60 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Macros
+
+Definidas como
+```rust
+macro_rules! nombre_macro {
+    pattern => {
+        ...
+    },
+    ...
+}
+```
+Pattern|Meaning
+---|---
+$( ... )*|Match 0 or more times with no separator
+$( ... ),*|Match 0 or more times, separated by commas
+$( ... );*|Match 0 or more times, separated by semicolons
+$( ... )+|Match 1 or more times with no separator
+$( ... ),+|Match 1 or more times, separated by commas
+$( ... );+|Match 1 or more times, separated by semicolons
+$( ... )?|Match 0 or 1 times with no separator
+$( ... ),?|Match 0 or 1 times, separated by commas
+$( ... );?|Match 0 or 1 times, separated by semicolons
+
+Ejemplo:
+```rust
+macro_rules! vec {
+    ($elem:expr ; $n:expr) => {
+        ::std::vec::from_elem($elem, $n)
+    };
+    ( $( $x:expr ),* ) => {
+        <[_]>::into_vec(Box::new([ $( $x ),* ]))
+    };
+    ( $( $x:expr ),+ ,) => {
+        vec![ $( $x ),* ]
+    };
+}
+```
+
+Fragment type|Matches (with examples)|Can be followed by...
+---|---|---
+expr|An expression: 2 + 2, "udon", x.len()|=> , ;
+stmt|An expression or declaration, not including any trailing semicolon (hard to use; try expr or block instead)|=> , ;
+ty|A type: String, Vec<u8>, (&str, bool), dyn Read + Send|=> , ; = | { [ : > as where
+path|A path (discussed): ferns, ::std::sync::mpsc|=> , ; = | { [ : > as where
+pat|A pattern (discussed):_, Some(ref x)|=> , = | if in
+item|An item (discussed): struct Point { x: f64, y: f64 }, mod ferns;|Anything
+block|A block (discussed): { s += "ok\n"; true }|Anything
+meta|The body of an attribute (discussed): inline, derive(Copy, Clone), doc="3D models."|Anything
+literal|A literal value: 1024, "Hello, world!", 1_000_000f64|Anything
+lifetime|A lifetime: 'a, 'item, 'static|Anything
+vis|A visibility specifier: pub, pub(crate), pub(in module::submodule)|Anything
+ident|An identifier: std, Json, longish_variable_name|Anything
+tt|A token tree (see text): ;, >=, {}, [0 1 (+ 0 1)]|Anything
+
 ## ObjectId + Serialize + String
 ```rust
 use serde::Serializer;
