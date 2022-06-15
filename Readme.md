@@ -3,6 +3,17 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Actix URL parametros
+Path extractor no funciona para `ObjecId`.
+```rust
+#[get("/occurrence/{track_id}")]
+pub async fn get_track_occurrences(
+    track_id: web::Path<ObjectId>,
+    app_data: web::Data<AppState>,
+) -> impl Responder { ... }
+```
+Retorna `unsupported type: 'any'`
+
 ## Macros
 
 Definidas como
