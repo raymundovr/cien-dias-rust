@@ -3,7 +3,12 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
-## Actix URL parametros
+## Concurrency
+[Crossbeam](https://crates.io/crates/crossbeam) es un huacal que provee múltiples herramientas y estructuras de datos para tareas concurrentes.
+
+[Rayon](https://crates.io/crates/rayon) provee implementaciones en paralelo sobre `iterator`s. Usa un método llamado _work-stealing_ que se ocupa de distribuir tareas en los hilos del CPU correctamente. Es mejor que un simple _fork/join_.
+
+## Actix URL parámetros
 Path extractor no funciona para `ObjecId`.
 ```rust
 #[get("/occurrence/{track_id}")]
