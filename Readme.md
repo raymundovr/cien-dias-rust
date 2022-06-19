@@ -8,6 +8,85 @@ Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secue
 
 [Rayon](https://crates.io/crates/rayon) provee implementaciones en paralelo sobre `iterator`s. Usa un método llamado _work-stealing_ que se ocupa de distribuir tareas en los hilos del CPU correctamente. Es mejor que un simple _fork/join_.
 
+### Read/Write Locks (RwLock<T>)
+
+Mutex tienen un solo `lock`. RwLock tiene un `lock` para `read` y uno para `write`. El lock para `write` funciona al igual que el `mutex`, i.e., es exclusivo y mutable. El lock para `read` es no mutable, similar a una referencia compartida.
+
+Una forma de observar su uso es en la configuración de aplicaciones. Normalmente una aplicación carga su configuración una vez y dentro de ella se comparten los datos en diversos componentes. Si la configuración debe ser recargada el `RwLock` entrará en `lock` para write.
+
+```rust
+use std::sync::RwLock;
+
+struct App {
+    config: RwLock<AppConfig>,
+}
+...
+// Read the config
+fn is_setting_x_enabled(&self) -> bool {
+    let config = self.config.read().unwrap();
+    config.setting_x == "Yes"
+}
+...
+// Write the config
+fn reload_config(&self) -> io::Result<()> {
+    let new_config = AppConfig::load()?;
+    let mut config_guard = self.config.write().unwrap();
+    *config_guard = new_config;
+    Ok(())
+}
+```
+
+### std::sync::Condvar
+Los procesos a veces no tienen mecanismos para detectar que todos sus hilos están sincronizados y poder terminar de forma idónea (por ejemplo cuando un servidor termina y sus hilos son terminados).
+
+`Condvar` funciona para poder esperar hasta que los hilos notifiquen que han realizado su labor.
+
+### Atomics std::sync::atomic
+Proporciona estructuras atómicas que pueden ser usadas por múltiples hilos para lectura y escritura sin causar accesos incorrectos a datos.
+
+Cada estructura arropa a tipos de datos primitivos y proporciona sus propios métodos para realizar operaciones. Está limitado a números, booleanos y apuntadores.
+
+No provocan mayores cargas al sistema, contrario a `Mutex` y `channel`.
+
+```rust
+use std::sync::atomic::{AtomicIsize, Ordering};
+
+let atom = AtomicIsize::new(0);
+// add 1
+atom.fetch_add(1, Ordering::SeqCst);
+```
+`Ordering` es el ordernamiento en memoria. Está de alguna forma relacionado con transacciones. Aparentemente `SeqCst` es lo que hay que usar cuando no se está seguro.
+
+Se puede observar su uso en una cancelación de tarea. Primero se define una variable atómica que va a contener una bandera de cancelación. Esta bandera puede ser pasada de forma segura entre hilos.
+```rust
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+
+let cancel_flag = Arc::new(AtomicBool::new(false));
+let worker_cancel_flag = cancel_flag.clone();
+```
+
+Ahora en el `worker` hacemos uso de la bandera
+```rust
+use std::sync::thread;
+use std::sync::atomic::Ordering;
+
+let worker_handle = thread::spawn(move || {
+    for element in collection {
+        do_some_work(element);
+        if worker_cancel_flag.load(Ordering::SeqCst) {
+            return None;
+        }
+        Some(result)
+    }
+});
+```
+
+### Variables globales con lazy_static
+[lazy_static](https://crates.io/crates/lazy_static) es un huacal que permite definir una macro que inicializa variables estáticas cuando son referenciadas por primera vez.
+
+La ventaja primordial que otorga es la capacidad de satisfacer al compilador en su necesidad de conocer tamaños y órdenes de acceso en memoria.
+
 ## Actix URL parámetros
 Path extractor no funciona para `ObjecId`.
 ```rust
