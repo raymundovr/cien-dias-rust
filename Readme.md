@@ -55,7 +55,7 @@ let atom = AtomicIsize::new(0);
 // add 1
 atom.fetch_add(1, Ordering::SeqCst);
 ```
-`Ordering` es el ordernamiento en memoria. Está de alguna forma relacionado con transacciones. Aparentemente `SeqCst` es lo que hay que usar cuando no se está seguro.
+`Ordering` es el ordenamiento en memoria. Está de alguna forma relacionado con transacciones. Aparentemente `SeqCst` es lo que hay que usar cuando no se está seguro.
 
 Se puede observar su uso en una cancelación de tarea. Primero se define una variable atómica que va a contener una bandera de cancelación. Esta bandera puede ser pasada de forma segura entre hilos.
 ```rust
