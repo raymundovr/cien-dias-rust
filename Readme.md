@@ -98,6 +98,18 @@ pub async fn get_track_occurrences(
 ```
 Retorna `unsupported type: 'any'`
 
+Sólo soporta un argumento para parámetros, si tienes más de uno hay que usar tuplas
+```rust
+#[patch("/track/{track_id}/observation/{observation_id}")]
+pub async fn update_observation(
+    path: web::Path<(String, String)>,
+    app_data: web::Data<AppState>,
+    observation_data: web::Json<UpdateObservationPayload>,
+) -> impl Responder {
+    let (track_id, observation_id) = path.into_inner();
+...
+}```
+
 ## Macros
 
 Definidas como
