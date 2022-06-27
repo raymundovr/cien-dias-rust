@@ -271,7 +271,58 @@ Scientific, minimum, precision	"{:12.3e}"	"     1.235e3"
 
 ## Mongo
 
-Aplicando una generalización a CRUD en Mongo.
+### Envolviendo estructuras en documentos BSON
+```rust
+#[patch("/track/{track_id}/observation/{observation_id}")]
+pub async fn update_observation(
+    path: web::Path<(String, String)>,
+    app_data: web::Data<AppState>,
+    observation_data: web::Json<UpdateObservationPayload>,
+) -> impl Responder {
+    let (track_id, observation_id) = path.into_inner();
+    let observation_id = ObjectId::from_str(&observation_id);
+
+    if observation_id.is_err() {
+        return HttpResponse::BadRequest();
+    }
+
+    let observation_data = observation_data.into_inner();
+    // Esto --->
+    let doc = match bson::to_bson(&observation_data) {
+        Ok(document) => document,
+        Err(_) => return HttpResponse::BadRequest(),
+    };
+
+    match crud::update_one::<Observation>(
+        &app_data.database,
+        doc! {
+            "_id": observation_id.unwrap(),
+            "track": track_id,
+        },
+	// Esto --->
+        mongodb::options::UpdateModifications::Document(doc! {
+            "$set": doc
+        }),
+        None,
+    )
+    .await
+    {
+        Some(result) => match result {
+            UpdateResult {
+                matched_count: 1,
+                ..
+            } => HttpResponse::Ok(),
+            _ => {
+                println!("{:?}", result);
+                HttpResponse::NotFound()
+            },
+        },
+        None => HttpResponse::InternalServerError(),
+    }
+}
+```
+
+### Aplicando una generalización a CRUD en Mongo.
 
 
 ```rust
