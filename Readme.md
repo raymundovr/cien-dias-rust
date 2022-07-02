@@ -34,6 +34,7 @@ fn reload_config(&self) -> io::Result<()> {
     *config_guard = new_config;
     Ok(())
 }
+
 ```
 
 ### std::sync::Condvar
