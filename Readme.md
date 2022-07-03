@@ -3,6 +3,13 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Building Release - Diferente Target
+
+```bash
+$ rustup target add x86_64-unknown-linux-gnu
+$ cargo build -r --target x86_64-unknown-linux-gnu
+```
+
 ## Concurrency
 [Crossbeam](https://crates.io/crates/crossbeam) es un huacal que provee múltiples herramientas y estructuras de datos para tareas concurrentes.
 
