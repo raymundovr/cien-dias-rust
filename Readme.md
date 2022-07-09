@@ -9,6 +9,15 @@ Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secue
 $ rustup target add x86_64-unknown-linux-gnu
 $ cargo build -r --target x86_64-unknown-linux-gnu
 ```
+## Async
+[Futures-rs](https://crates.io/crates/futures) es una librería que provee utilidades para la programación asíncrona en Rust.
+
+- Futures
+- Streams. Serie de valores producidos asíncronamente
+- Sinks. Escritura de datos asíncronos
+- Executors. Responsables de ejecutar tareas asíncronas
+
+https://docs.rs/futures/0.3.21/futures/
 
 ## Concurrency
 [Crossbeam](https://crates.io/crates/crossbeam) es un huacal que provee múltiples herramientas y estructuras de datos para tareas concurrentes.
