@@ -3,6 +3,23 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Cargo
+
+### Workspace
+
+- Varios paquetes pueden compartir dependencias y un Cargo.lock si son definidos en un workspace.
+- Varios paquetes comparten un solo `target/`
+- Varios paquetes comparten una sección `[patch]` y `[profile.*]` en su manifiesto (Cargo.toml)
+
+https://doc.rust-lang.org/cargo/reference/workspaces.htmlp
+
+Existen dos tipos:
+
+- Root package. Se puede crear workspace a partir de un paquete mediante la propiedad `[workspace]` dentro del Cargo.toml de dicho paquete. A partir de entonces el 
+directorio donde esta este Cargo.toml es la raíz del workspace.
+- Virtual manifest. Se pueden mantener varios paquetes no primarios o separados definiendo un archivo Cargo.toml con una sola propiedad `[workspace]` y sus miembros.
+
+
 ## Building Release - Diferente Target
 
 ```bash
