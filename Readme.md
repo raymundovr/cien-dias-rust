@@ -142,7 +142,8 @@ pub async fn update_observation(
 ) -> impl Responder {
     let (track_id, observation_id) = path.into_inner();
 ...
-}```
+}
+```
 
 ## Macros
 
@@ -197,6 +198,68 @@ lifetime|A lifetime: 'a, 'item, 'static|Anything
 vis|A visibility specifier: pub, pub(crate), pub(in module::submodule)|Anything
 ident|An identifier: std, Json, longish_variable_name|Anything
 tt|A token tree (see text): ;, >=, {}, [0 1 (+ 0 1)]|Anything
+
+## Procedural macros
+Son macros que permiten enriquecer tipos en Rust. Se declaran 
+```toml
+...
+[lib]
+procedural-macro = true
+...
+```
+Las macros necesitan mantener su propia _sanidad_ ya que son incrustadas directamente en el código que las invoca, por lo tanto están sujetas al contexto que les rodea. Es decir, las variables definidas en la macro deben tener nombres realmente únicos para evitar colisiones y el `use` debe invocar al espacio global, ejemplo `::std::option::Option`.
+### Funcionales
+Para macros que son funciones, invocadas como `my_macro!()` se necesita una función con el atributo `#[proc_macro]` sobre la función que generará el nuevo código.
+
+```rust
+// proc_macro_examples
+use proc_macro::TokenStream;
+
+#[proc_macro]
+pub fn make_answer(_item: TokenStream) -> TokenStream {
+    "fn answer() -> u32 { 42 }".parse().unwrap()
+}
+
+
+// client
+use proc_macro_examples::make_answer;
+
+make_answer!();
+
+fn main() {
+    println!("{}", answer());
+}
+```
+
+### Derive
+Para macros que generan código mediante el atributo `#derive()`. Se usan en `enum`s, `struct`s o `union`s.
+
+Para declararlas se usa `#[proc_macro_derive]` sobre la función que enriquecerá el código. Esta función tiene el encabezado `fn (TokenStream) -> TokenStream`.
+
+```rust
+// macro
+use proc_macro::TokenStream;
+
+#[proc_macro_derive(AnswerFn)]
+pub fn derive_answer_fn(_item: TokenStream) -> TokenStream {
+    "fn answer() -> u32 { 42 }".parse().unwrap()
+}
+
+// cliente
+
+use proc_macro_examples::AnswerFn;
+
+#[derive(AnswerFn)]
+struct Struct;
+
+fn main() {
+    assert_eq!(42, answer());
+}
+```
+
+Estas macros hacen uso de las librerías [syn](https://crates.io/crates/syn) (para generar el árbol de sintáxis del código a partir de una secuencia de tokens) y [quote](https://crates.io/crates/quote) (que produce los tokens que son retornados al compilador a partir del árbol de sintáxis).
+
+
 
 ## ObjectId + Serialize + String
 ```rust

@@ -1,10 +1,13 @@
 [package]
-name = "hola_macros_client"
+name = "hola_macros_derive"
 version = "0.1.0"
 edition = "2021"
+
+[lib]
+proc-macro = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-hola_macros = { path = "../hola_macros" }
-hola_macros_derive = { path = "./hola_macros_derive" }
+syn = "1.0"
+quote = "1.0"
