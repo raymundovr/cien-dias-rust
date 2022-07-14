@@ -259,8 +259,41 @@ fn main() {
 
 Estas macros hacen uso de las librerías [syn](https://crates.io/crates/syn) (para generar el árbol de sintáxis del código a partir de una secuencia de tokens) y [quote](https://crates.io/crates/quote) (que produce los tokens que son retornados al compilador a partir del árbol de sintáxis).
 
+### Attribute-like
+Similares a derive y también pueden ser aplicadas a funciones.
 
+La función que genera el código de la macro tiene el encabezado
+```rust
+#[proc_macro_attribute]
+fn my_macro(attr: TokenStream, item: TokenStream) -> TokenStream
+```
+Donde 
+- `attr` son los parámetros que se le pasan al atributo. Ejemplo: `#[route(GET, "/")]` tiene `attr` = `GET, "/"`.
+- `item` es el elemento al que se le aplica la macro, ex: struct, fn, etc.
 
+```rust
+#[proc_macro_attribute]
+pub fn hola_macros_attribute(attr: TokenStream, item: TokenStream) -> TokenStream {
+    impl_hello_attribute(item)
+}
+
+fn impl_hello_attribute(item: TokenStream) -> TokenStream {
+    let ast: syn::DeriveInput = syn::parse(item).unwrap();
+    let name = &ast.ident;
+
+    let gen = quote! {
+        // ¡puede incrustar el elemento entero! 🥳
+        #ast
+        impl HolaMacro for #name {
+            fn hola_macro() {
+                println!("¡Hola attribute, me llamo {}!", stringify!(#name));
+            }
+        }
+    };
+
+    gen.into()
+}
+```
 ## ObjectId + Serialize + String
 ```rust
 use serde::Serializer;
