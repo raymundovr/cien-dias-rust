@@ -4,16 +4,22 @@ use hola_macros_derive::HolaMacrosDerive;
 use hola_macros_derive::hola_macros_attribute;
 use holamacro::HolaMacro;
 
+trait MiTrait {
+    fn me_llamo() -> String;
+}
+
 #[derive(HolaMacrosDerive)]
-#[hola("nombre")]
-struct Estructura;
+#[hola_uno("mi verdadero nombre es mio")]
+struct Estructura {
+    campo: String,
+}
 
 #[hola_macros_attribute(name="mio")]
 struct AttrEstructura;
 
 fn main() {
-    println!("Hello, world!");
-    Estructura::hola_macro();
+    let nombre = Estructura::me_llamo();
+    println!("{}", nombre);
 
-    AttrEstructura::hola_macro();
+    // AttrEstructura::hola_macro();
 }
