@@ -294,6 +294,45 @@ fn impl_hello_attribute(item: TokenStream) -> TokenStream {
     gen.into()
 }
 ```
+
+### Darling
+[Darling](https://crates.io/crates/darling) es una librería que ayuda a transformar `TokenStream`s a estructuras para poder trabajar mejor con macros.
+
+```rust
+// proc-macro lib
+
+#[macro_use]
+extern crate darling;
+
+#[derive(Debug, FromDeriveInput)]
+#[darling(attributes(mi_nombre))]
+struct HolaDarlingOpts {
+    ident: Ident,
+    nombre: Option<String>,
+    apellidos: Option<String>,
+}
+
+#[proc_macro_derive(HolaDarling, attributes(mi_nombre))]
+pub fn hola_darling(input: TokenStream) -> TokenStream {
+    let ast: DeriveInput = syn::parse(input).expect("Error al crear HolaMacrosDerive");
+    let parsed: Result<HolaDarlingOpts, darling::Error> = darling::FromDeriveInput::from_derive_input(&ast);
+    println!("{:?}", parsed);
+    let gen = quote!{};
+
+    gen.into()
+}
+```
+```rust
+// cliente
+#[derive(HolaDarling)]
+#[mi_nombre(nombre = "Raymundo", apellidos = "Vásquez Ruiz")]
+struct Nombre;
+```
+
+Resulta en
+```
+Ok(HolaDarlingOpts { ident: Ident { ident: "Nombre", span: #0 bytes(409..415) }, attrs: [], nombre: Some("Raymundo"), apellidos: Some("Vásquez Ruiz") })
+```
 ## ObjectId + Serialize + String
 ```rust
 use serde::Serializer;
