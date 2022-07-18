@@ -3,6 +3,13 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Lib
+
+### Re-exportar librería interna
+
+// Re-export
+pub use libinterna::modulo;
+
 ## Cargo
 
 ### Workspace
