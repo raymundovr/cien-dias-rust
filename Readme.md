@@ -3,6 +3,21 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## TOML
+Se puede usar serde con el crate [toml](https://crates.io/crates/toml)
+
+## Files
+### Lectura
+```rust
+use std::fs::File;
+use std::io::Read;
+
+...
+let mut toml_file = String::new();
+    
+let mut file_contents = File::open(file_path).expect("Cannot open settings file");
+file_contents.read_to_string(&mut toml_file).expect("Cannot load settings file");
+```
 ## Mongo DB Lib
 https://gitlab.com/raymundo.vr/mongo-db-lib
 
