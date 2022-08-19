@@ -285,6 +285,7 @@ fn main() {
 Estas macros hacen uso de las librerías [syn](https://crates.io/crates/syn) (para generar el árbol de sintáxis del código a partir de una secuencia de tokens) y [quote](https://crates.io/crates/quote) (que produce los tokens que son retornados al compilador a partir del árbol de sintáxis).
 
 ### Attribute-like
+En mongolibderive.
 Similares a derive y también pueden ser aplicadas a funciones.
 
 La función que genera el código de la macro tiene el encabezado
