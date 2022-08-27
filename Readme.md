@@ -3,6 +3,41 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Cuckoo WASM
+
+### Setup
+```bash
+; cargo new --lib cuckoo-wasm
+; wasm-pack build
+; npm init wasm-app www
+; cd www
+; yarn install
+```
+
+Ahora hay que agregar `dependencies` en `package.json`
+```json
+"dependencies": {
+    "cuckoo-wasm": "../pkg"
+  },
+```
+Entonces se puede ejecutar
+```bash
+; yarn start
+```
+
+```toml
+...
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.18"
+cuckoofilter = "0.5.0"
+lazy_static = "1.4.0"
+...
+```
+
+
 ## TOML
 Se puede usar serde con el crate [toml](https://crates.io/crates/toml)
 
