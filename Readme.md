@@ -16,6 +16,9 @@ Ver: https://doc.rust-lang.org/reference/linkage.html
 
 ### Para generar
 El proyecto genera un archivo `generated.rs` que es usado en `lib.rs`. Está basado en las interfaces declaradas en el `schema.widl`.
+```bash
+; wapc generate codegen.yaml
+```
 
 ```rust
 ...
@@ -27,6 +30,21 @@ pub use generated::*;
 pub fn wapc_init() {
     // Esta función viene de generated
     Handlers::register_does_word_exist(does_word_exist);
+}
+```
+
+Es importante notar que los valores retornados por las funciones son arropados por `HandlerResult`
+```rust
+fn does_word_exist(word: String) -> HandlerResult<bool> {
+    Ok(CUCKOO_FILTER.contains(&word))
+}
+
+// EchoInput has been already defined in generated.rs
+fn echo(input: EchoInput) -> HandlerResult<EchoInput> {
+    Ok(EchoInput {
+        x: format!("Echooox {}", input.x),
+        y: format!("Echoooy {}", input.y),
+    })
 }
 ```
 

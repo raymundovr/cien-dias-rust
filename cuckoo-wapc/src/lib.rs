@@ -22,8 +22,17 @@ lazy_static! {
 #[no_mangle]
 pub fn wapc_init() {
     Handlers::register_does_word_exist(does_word_exist);
+    Handlers::register_echo(echo);
 }
 
 fn does_word_exist(word: String) -> HandlerResult<bool> {
     Ok(CUCKOO_FILTER.contains(&word))
+}
+
+// EchoInput has been already defined in generated.rs
+fn echo(input: EchoInput) -> HandlerResult<EchoInput> {
+    Ok(EchoInput {
+        x: format!("Echooox {}", input.x),
+        y: format!("Echoooy {}", input.y),
+    })
 }

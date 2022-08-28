@@ -3,3 +3,12 @@ namespace "greeting"
 interface {
   does_word_exist(word: string): bool
 }
+
+type EchoInput {
+    x: string
+    y: string
+}
+
+interface {
+    echo(input: EchoInput): EchoInput
+}
