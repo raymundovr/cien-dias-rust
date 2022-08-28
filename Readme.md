@@ -3,6 +3,48 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Cuckoo WAPC
+### Setup
+```bash
+# Requires wapc-cli
+; wapc new rust cuckoo-wapc
+; cd cuckoo-wapc
+# create src/lib.rs
+```
+El proyecto es creado como tipo `rlib`. Este tipo de crate indica que se generará un "Rust library" intermedio que es usado por el compilador como futura referencia cuando genere ejecutables o librerías enlazados estáticamente.
+Ver: https://doc.rust-lang.org/reference/linkage.html
+
+### Para generar
+El proyecto genera un archivo `generated.rs` que es usado en `lib.rs`. Está basado en las interfaces declaradas en el `schema.widl`.
+
+```rust
+...
+mod generated;
+pub use generated::*;
+...
+
+#[no_mangle]
+pub fn wapc_init() {
+    // Esta función viene de generated
+    Handlers::register_does_word_exist(does_word_exist);
+}
+```
+
+```bash
+; make
+```
+
+Ahora usamos Node.js como host del módulo WASM. Así se puede invocar desde línea de comandos.
+```bash
+# r@Raymundos-MBP  in ~/Aprendizaje/rust/CienDiasDeCodigo/cuckoo-wapc/nodehost on git:main x [19:50:36] 🙃
+; node nodehost.js ../target/wasm32-unknown-unknown/release/cuckoo_wapc.wasm does_word_exist '{"word":"foo"}'
+Result: false
+
+# r@Raymundos-MBP  in ~/Aprendizaje/rust/CienDiasDeCodigo/cuckoo-wapc/nodehost on git:main x [19:50:45] 🙃
+; node nodehost.js ../target/wasm32-unknown-unknown/release/cuckoo_wapc.wasm does_word_exist '{"word":"esto"}'
+Result: true
+```
+
 ## Cuckoo WASM
 
 ### Setup
