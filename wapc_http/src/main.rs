@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer};
 use anyhow::Result;
 use env_logger::Env;
@@ -8,6 +11,10 @@ use std::time::Instant;
 use wapc::WapcHost;
 use wapc_codec::messagepack::{deserialize, serialize};
 use wasmtime_provider::WasmtimeEngineProvider;
+
+lazy_static! {
+    
+}
 
 struct AppState {
     pub engine: WasmtimeEngineProvider,
