@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html>
+<head><title>Hola mundo</title></head>
+<body>
+    <script>     
+ async function hola_mundo() {
+     console.log("Cargando...");
+     const module = await fetch("hola_mundo.wasm");
+     const bytes = await module.arrayBuffer();
+     console.log("instanciando...");
+	 const instance = await WebAssembly.instantiate(bytes);
+	 const code = instance.instance.exports.hola_mundo();
+	 const char = String.fromCharCode(code);
+     console.log("Resultado:", String.fromCharCode(104), code, char);
+ }
+
+ hola_mundo();
+</script>
+</body>
+</html>
