@@ -3,6 +3,10 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## RabbitMQ
+
+Usando el crate [amiquip](https://docs.rs/amiquip/latest/amiquip/).
+
 ## Cuckoo WAPC
 ### Setup
 ```bash
