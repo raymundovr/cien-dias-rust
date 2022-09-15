@@ -7,6 +7,9 @@ Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secue
 
 Usando el crate [amiquip](https://docs.rs/amiquip/latest/amiquip/).
 
+### Correlation ID
+Un mensaje es enviado a una cola predefinida por el actor A. El mensaje contiene un campo "Correlation ID" (CID) que contiene información para el procesador del mensaje. El actor B procesa el mensaje y lo envía de vuelta a la cola con el mismo CID. Actor A recupera el mensaje.
+
 ## Cuckoo WAPC
 ### Setup
 ```bash
