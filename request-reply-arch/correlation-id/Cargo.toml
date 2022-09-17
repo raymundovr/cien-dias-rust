@@ -6,4 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.65"
+clap = { version = "3.2.22", features = ["derive"] }
 common-q = { path = "../common-q"}
