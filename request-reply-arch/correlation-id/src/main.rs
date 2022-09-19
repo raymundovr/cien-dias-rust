@@ -34,8 +34,7 @@ fn main() {
             println!("Running as producer. Instance ID {}", args.id);
             q.publish_message(format!("Hello, my ID is {}", &args.id).as_bytes())
                 .expect("Cannot publish message");
-
-            q.close().expect("Cannot close Queue");
         }
     }
+    q.close().expect("Cannot close Queue");
 }
