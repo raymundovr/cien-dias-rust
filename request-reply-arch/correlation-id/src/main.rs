@@ -26,7 +26,9 @@ fn main() {
     match args.mode {
         Mode::Consumer => {
             println!("Running as consumer. Instance ID {}", args.id);
-            q.read_queue().expect("Something went wrong while reading the Q");
+            q.read_queue(|body| {
+                println!("This is the closure {}", body);
+            }).expect("Something went wrong while reading the Q");
         }
         Mode::Producer => {
             println!("Running as producer. Instance ID {}", args.id);
