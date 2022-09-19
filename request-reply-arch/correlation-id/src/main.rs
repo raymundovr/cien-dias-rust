@@ -1,5 +1,5 @@
-mod producer;
 use clap::{Parser, ValueEnum};
+use common_q::*;
 
 const URL: &'static str = "amqp://guest:guest@localhost:5672";
 
@@ -21,14 +21,19 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
+    let q = Queue::new(URL, &args.queue).expect("Cannot instantiate new Queue");
 
     match args.mode {
         Mode::Consumer => {
             println!("Running as consumer. Instance ID {}", args.id);
+            q.read_queue().expect("Something went wrong while reading the Q");
         }
         Mode::Producer => {
             println!("Running as producer. Instance ID {}", args.id);
-            producer::init(URL, &args.id, &args.queue);
+            q.publish_message(format!("Hello, my ID is {}", &args.id).as_bytes())
+                .expect("Cannot publish message");
+
+            q.close().expect("Cannot close Queue");
         }
     }
 }
