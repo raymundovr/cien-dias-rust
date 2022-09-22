@@ -85,7 +85,7 @@ impl<'a> Queue<'a> {
                             continue;
                         }
                     };
-
+                    println!("Received message for {} with ID {}", reply_to, correlation_id);
                     let body = String::from_utf8_lossy(&delivery.body);
                     let result = process(body);
                     exchange.publish(Publish::with_properties(
@@ -131,7 +131,7 @@ impl<'a> Queue<'a> {
             AmqpProperties::default()
                 .with_reply_to(queue.name().to_string())
                 .with_correlation_id(correlation_id.clone()),
-        ))?;
+        )).expect("Cannot publish RPC message");
 
         println!("Consuming now...");
         for message in consumer.receiver().iter() {

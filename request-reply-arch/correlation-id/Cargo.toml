@@ -9,3 +9,5 @@ edition = "2021"
 anyhow = "1.0.65"
 clap = { version = "3.2.22", features = ["derive"] }
 common-q = { path = "../common-q"}
+env_logger = "0.9.0"
+log = "0.4.0"

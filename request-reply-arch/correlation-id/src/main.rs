@@ -20,6 +20,7 @@ struct Args {
 }
 
 fn main() {
+    env_logger::init();
     let args = Args::parse();
     let q = Queue::new(URL, &args.queue).expect("Cannot instantiate new Queue");
 
@@ -38,7 +39,8 @@ fn main() {
             /* q.publish_message(format!("Hello, my ID is {}", &args.id).as_bytes())
                 .expect("Cannot publish message"); */
 
-            q.request_and_return_rpc("This is the msg".as_bytes(), args.id).expect("Cannot publish RPC");
+            let r = q.request_and_return_rpc("This is the msg".as_bytes(), args.id).expect("Cannot publish RPC");
+            println!("Producer ended with {:?}", r);
         }
     }
 
