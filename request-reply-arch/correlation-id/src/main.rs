@@ -25,16 +25,23 @@ fn main() {
 
     match args.mode {
         Mode::Consumer => {
-            println!("Running as consumer. Instance ID {}", args.id);
-            q.read_queue(|body| {
+            println!("Running as consumer. Q name: {}. Instance ID: {}", args.queue, args.id);
+            /* q.read_queue(|body| {
                 println!("This is the closure {}", body);
-            }).expect("Something went wrong while reading the Q");
+            }).expect("Something went wrong while reading the Q"); */
+
+            q.process_and_reply_rpc(|body| format!("{} add this", body))
+                .expect("Cannot reply to rpc");
         }
         Mode::Producer => {
-            println!("Running as producer. Instance ID {}", args.id);
-            q.publish_message(format!("Hello, my ID is {}", &args.id).as_bytes())
-                .expect("Cannot publish message");
+            println!("Running as producer. Target Q: {}. Instance ID {}", args.queue, args.id);
+            /* q.publish_message(format!("Hello, my ID is {}", &args.id).as_bytes())
+                .expect("Cannot publish message"); */
+
+            q.request_and_return_rpc("This is the msg".as_bytes(), args.id).expect("Cannot publish RPC");
         }
     }
+
+    println!("Closing Q...");
     q.close().expect("Cannot close Queue");
 }

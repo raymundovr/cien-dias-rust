@@ -76,7 +76,11 @@ impl<'a> Queue<'a> {
                     ) {
                         (Some(reply_to), Some(id)) => (reply_to, id),
                         _ => {
-                            eprintln!("Invalid message {:?}", delivery.body);
+                            eprintln!(
+                                "Invalid message {:?} {:?}",
+                                delivery.properties.reply_to(),
+                                delivery.properties.correlation_id()
+                            );
                             consumer.ack(delivery)?;
                             continue;
                         }
@@ -89,6 +93,7 @@ impl<'a> Queue<'a> {
                         reply_to,
                         AmqpProperties::default().with_correlation_id(correlation_id.to_string()),
                     ))?;
+                    consumer.ack(delivery)?;
                 }
                 other => {
                     println!("Consumer Q ended {:?}", other);
@@ -98,5 +103,51 @@ impl<'a> Queue<'a> {
         }
 
         Ok(())
+    }
+
+    pub fn request_and_return_rpc(
+        &self,
+        message: &[u8],
+        correlation_id: String,
+    ) -> Result<Option<String>, amiquip::Error> {
+        let exchange = Exchange::direct(&self.channel);
+        let queue = self.channel.queue_declare(
+            "",
+            QueueDeclareOptions {
+                exclusive: true,
+                ..QueueDeclareOptions::default()
+            },
+        )?;
+        let consumer = queue.consume(ConsumerOptions::default())?;
+
+        println!(
+            "My Q name {:?}. Sending message to {}",
+            queue.name(),
+            self.name
+        );
+        exchange.publish(Publish::with_properties(
+            message,
+            self.name,
+            AmqpProperties::default()
+                .with_reply_to(queue.name().to_string())
+                .with_correlation_id(correlation_id.clone()),
+        ))?;
+
+        println!("Consuming now...");
+        for message in consumer.receiver().iter() {
+            match message {
+                ConsumerMessage::Delivery(delivery) => {
+                    if delivery.properties.correlation_id().as_ref() == Some(&correlation_id) {
+                        return Ok(Some(String::from_utf8_lossy(&delivery.body).into()));
+                    }
+                }
+                other => {
+                    eprintln!("Consume Q ended {:?}", other);
+                }
+            }
+        }
+
+        println!("I am done...");
+        Ok(None)
     }
 }
