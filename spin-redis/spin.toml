@@ -1,0 +1,15 @@
+spin_version = "1"
+authors = ["Raymundo Vásquez Ruiz <raymundo.vr@protonmail.com>"]
+description = "hola redis spin"
+name = "spin-redis"
+trigger = { type = "redis", address = "redis://localhost:6379" }
+version = "0.1.0"
+
+[[component]]
+environment = { REDIS_ADDRESS = "redis://localhost:6379" }
+id = "spin-redis"
+source = "target/wasm32-wasi/release/spin_redis.wasm"
+[component.trigger]
+channel = "spin"
+[component.build]
+command = "cargo build --target wasm32-wasi --release"
