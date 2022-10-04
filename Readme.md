@@ -3,6 +3,18 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Logs
+Rust cuenta con una fachada para logs con el huacal [log](https://crates.io/crates/log). Este huacal sólo proporciona las funcionalidades, posteriormente hay que usar una implementación concreta, por ejemplo [env_logger](https://crates.io/crates/env_logger).
+
+Posteriormente hay que ejecutar los binarios con un variable de entorno que indique el nivel de log que se desea mostrar
+```bash
+RUST_LOG=trace cargo run
+```
+
+Si no se especifica esto el nivel por default es "ERROR".
+
+Dado que es el binario el que debe proporcionar la implementación concreta las librerías pueden depender sólo de log y así proporcionar la funcionalidad sin comprometer cómo el cliente desea imprimir sus logs.
+
 ## RabbitMQ
 
 Usando el crate [amiquip](https://docs.rs/amiquip/latest/amiquip/).
