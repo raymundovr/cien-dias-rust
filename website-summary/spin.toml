@@ -1,0 +1,15 @@
+spin_version = "1"
+authors = ["Raymundo Vásquez Ruiz <raymundo.vr@protonmail.com>"]
+description = "Get website summaries"
+name = "website-summary"
+trigger = { type = "redis", address = "redis://localhost:6379" }
+version = "0.1.0"
+
+[[component]]
+id = "website-summary"
+source = "target/wasm32-wasi/release/website_summary.wasm"
+allowed_http_hosts = ["insecure:allow-all"]
+[component.trigger]
+channel = "spin-ws-summary"
+[component.build]
+command = "cargo build --target wasm32-wasi --release"
