@@ -3,6 +3,23 @@
 
 Los nombres de los proyectos no reflejan los días. Sólo siguen su propia secuencia.
 
+## Hello gRPC
+
+Un archivo `build.rs` en el directorio raíz del proyecto controla el proceso de generación del binario. Ver [Build Scripts](https://doc.rust-lang.org/cargo/reference/build-scripts.html).
+
+Una declaración de binarios puede realizarse en `Cargo.toml`.
+```
+[[bin]]
+name = "hellogrpc-server"
+path = "src/server.rs"
+
+[[bin]]
+name = "hellogrpc-client"
+path = "src/client.rs"
+```
+
+
+
 ## Logs
 Rust cuenta con una fachada para logs con el huacal [log](https://crates.io/crates/log). Este huacal sólo proporciona las funcionalidades, posteriormente hay que usar una implementación concreta, por ejemplo [env_logger](https://crates.io/crates/env_logger).
 
