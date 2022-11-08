@@ -1,0 +1,16 @@
+syntax = "proto3";
+package persongreeter;
+
+service Greeter {
+    rpc Greet(Person) returns (PersonGreetings);
+}
+
+message Person {
+    int32 id = 1;
+    string name = 2;
+    uint32 age = 3;
+}
+
+message PersonGreetings {
+    string message = 1;
+}
