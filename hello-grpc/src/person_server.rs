@@ -13,9 +13,15 @@ pub struct PersonGreeter {}
 impl Greeter for PersonGreeter {
     async fn greet(&self, request: Request<Person>) -> Result<Response<PersonGreetings>, Status> {
         println!("Got Request {:?}", request);
-
+        // unwrap private properties
+        let request = request.into_inner();
+        
         let reply = PersonGreetings {
-            message: format!("Hello {}", request.into_inner().name).into(),
+            message: format!(
+                "Hello {}, congratulations on your {} anniversary",
+                request.name,
+                request.age,
+            ),
         };
 
         Ok(Response::new(reply))

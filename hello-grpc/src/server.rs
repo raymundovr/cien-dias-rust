@@ -18,7 +18,7 @@ impl Greeter for MyGreeter {
         println!("Got REQ {:?}", request);
         let reply = hello_world::HelloReply {
             // fields are private, hence the into_inner()
-            message: format!("Hello {}!", request.into_inner().name).into(),
+            message: format!("Hello {}!", request.into_inner().name),
         };
 
         Ok(Response::new(reply))
