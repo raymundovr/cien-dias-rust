@@ -11,6 +11,14 @@ path = "src/server.rs"
 name = "hellogrpc-client"
 path = "src/client.rs"
 
+[[bin]]
+name = "person-client"
+path = "src/person_client.rs"
+
+[[bin]]
+name = "person-server"
+path = "src/person_server.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

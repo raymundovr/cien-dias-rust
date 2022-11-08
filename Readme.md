@@ -18,6 +18,18 @@ name = "hellogrpc-client"
 path = "src/client.rs"
 ```
 
+El proceso `build` genera código que permite implementar los servicios gRPC.
+
+Se necesita que tanto cliente como servidor definan un módulo donde las estructuras que fueron pre-generadas con tonic sean implementadas o usadas.
+
+El servidor o cliente deben incluir esto de la siguiente manera
+```rust
+pub mod xxx_yyy {
+    tonic::include_proto!("package_name");
+}
+```
+
+Donde `package_name` es el que está definido dentro del archivo .proto.
 
 
 ## Logs
