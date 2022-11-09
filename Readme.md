@@ -31,6 +31,8 @@ pub mod xxx_yyy {
 
 Donde `package_name` es el que está definido dentro del archivo .proto.
 
+## Streams
+[TokioStream](https://docs.rs/tokio-stream/latest/tokio_stream/) es el huacal que proporciona helpers para trabajar con Streams usando Tokio.
 
 ## Logs
 Rust cuenta con una fachada para logs con el huacal [log](https://crates.io/crates/log). Este huacal sólo proporciona las funcionalidades, posteriormente hay que usar una implementación concreta, por ejemplo [env_logger](https://crates.io/crates/env_logger).

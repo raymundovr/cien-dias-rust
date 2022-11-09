@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package hellostreams;
+
+service Streamer {
+    rpc BidirectionalMessage(stream StreamMessage) returns (stream StreamMessage) ;
+}
+
+message StreamMessage {
+    string message = 1;
+}

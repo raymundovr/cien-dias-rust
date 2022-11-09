@@ -19,12 +19,22 @@ path = "src/person_client.rs"
 name = "person-server"
 path = "src/person_server.rs"
 
+[[bin]]
+name = "stream-client"
+path = "src/stream_client.rs"
+
+[[bin]]
+name = "stream-server"
+path = "src/stream_server.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+futures = "0.3"
 tonic = "0.8"
 prost = "0.11"
-tokio = { version = "1", features = ["macros", "rt-multi-thread"]}
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tokio-stream = { version = "0.1", features = ["time"] }
 
 [build-dependencies]
 tonic-build = "0.8"
